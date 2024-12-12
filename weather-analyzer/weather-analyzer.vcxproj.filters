@@ -29,8 +29,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="weather_data_EU_1980-2019_temp_only.csv" />
+    <None Include="data\weather_data_EU_1980-2019_temp_only.csv" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="utc_timestamp,AT_temperature,BE_tem.txt" />
+    <Text Include="data\utc_timestamp,AT_temperature,BE_tem.txt" />
   </ItemGroup>
 </Project>
