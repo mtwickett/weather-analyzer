@@ -21,7 +21,7 @@
     <ClCompile Include="CsvReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TimePoint.cpp">
+    <ClCompile Include="TemperatureRow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,7 +29,7 @@
     <ClInclude Include="CsvReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TimePoint.h">
+    <ClInclude Include="TemperatureRow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -130,11 +130,11 @@
   <ItemGroup>
     <ClCompile Include="CsvReader.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="TimePoint.cpp" />
+    <ClCompile Include="TemperatureRow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CsvReader.h" />
-    <ClInclude Include="TimePoint.h" />
+    <ClInclude Include="TemperatureRow.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="data\weather_data_EU_1980-2019_temp_only.csv" />
