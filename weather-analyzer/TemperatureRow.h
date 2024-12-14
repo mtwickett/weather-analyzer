@@ -13,7 +13,7 @@ private:
     std::map<std::string, double> temperatures; // Maps country codes to temperature values
 
 public:
-    TemperatureRow(const std::string& _line, const std::vector<std::string>& _headers);
+    TemperatureRow(const std::string& , const std::vector<std::string>& _headers);
 
     std::string getUtcTimestamp() const;
     int getYear() const;
