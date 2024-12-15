@@ -10,10 +10,10 @@ class TemperatureRow
 
 private:
     std::string utcTimestamp;
-    std::map<std::string, double> temperatures; // Maps country codes to temperature values
+    std::map<std::string, double> countryTemperatures; // Maps country codes to temperature values
 
 public:
-    TemperatureRow(const std::string& , const std::vector<std::string>& _headers);
+    TemperatureRow(const std::string& _utcTimestamp, const std::map<std::string, double>& _countryTemperatures);
 
     std::string getUtcTimestamp() const;
     int getYear() const;

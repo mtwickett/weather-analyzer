@@ -124,37 +124,41 @@ std::vector<std::string> CsvReader::tokenize(std::string csvLine, char delimiter
 }
 
 
-TemperatureRow CsvReader::stringsToTempRow(std::vector<std::string> tokens, std::vector<std::string> headers)
+TemperatureRow CsvReader::stringsToTempRow(std::vector<std::string> rowTokens, std::vector<std::string> headers)
 {
-	double price, amount;
-	std::string timestamp, product;
-	OrderBookType orderBookType;
+	std::string utcTimestamp;
+	std::map<std::string, double> countryTemperatures;
+	
+	if (rowTokens.size() != 29) {
+		std::cout << "Line has " << rowTokens.size() << " tokens" << std::endl;
+		throw std::exception{};
+	}
+	
+	utcTimestamp = rowTokens[0];
 
-	if (tokens.size() != 5) {
-		std::cout << "Line has " << tokens.size() << " tokens" << std::endl;
+	std::vector<std::string> temperatures(rowTokens.begin() + 1, rowTokens.end());
+	if (temperatures.size() != headers.size())
+	{
+		std::cout << "Row has " << temperatures.size() << " temperatures" << std::endl;
 		throw std::exception{};
 	}
 
-	try {
-		price = std::stod(tokens[3]);
-		amount = std::stod(tokens[4]);
+	for (size_t i = 0; i < headers.size(); ++i)
+	{
+		try {
+			double temperature = std::stod(temperatures[i]);
+			countryTemperatures[headers[i]] = temperature;
+		}
+		catch (const std::exception& e) {
+			std::cout << "Bad double" << std::endl;
+			throw e;
+		}
 	}
-	catch (const std::exception& e) {
-		std::cout << "Bad double" << std::endl;
-		throw e;
-	}
-
-	timestamp = tokens[0];
-	product = tokens[1];
-	orderBookType = OrderBookEntry::stringToOrderBookType(tokens[2]);
-
-	OrderBookEntry orderBookEntry{
-		price,
-		amount,
-		timestamp,
-		product,
-		orderBookType
+	
+	TemperatureRow temperatureRow {
+		utcTimestamp,
+		countryTemperatures
 	};
 
-	return orderBookEntry;
+	return temperatureRow;
 }
