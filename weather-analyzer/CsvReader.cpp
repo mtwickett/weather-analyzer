@@ -13,15 +13,9 @@ std::filesystem::path CsvReader::getFilePath()
 	std::filesystem::path rootPath = std::filesystem::current_path();
 	std::filesystem::path filePath = rootPath / "data" / "utc_timestamp,AT_temperature,BE_tem.txt";
 
-	try {
-		if (!std::filesystem::exists(filePath))
-		{
-			throw std::runtime_error("Error: Path does not exist: " + filePath.string());
-		}
-	}
-	catch (const std::exception& e)
+	if (!std::filesystem::exists(filePath))
 	{
-		std::cerr << e.what() << std::endl;
+		throw std::runtime_error("Error: Path does not exist: " + filePath.string());
 	}
 
 	return filePath;
