@@ -1,13 +1,6 @@
 #include "CsvReader.h"
 
 
-
-CsvReader::CsvReader()
-{
-
-}
-
-
 std::filesystem::path CsvReader::getFilePath()
 {
 	std::filesystem::path rootPath = std::filesystem::current_path();
