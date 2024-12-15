@@ -1,18 +1,22 @@
+// Ensure this header file is included only once
 #pragma once
 
-#include "TemperatureRow.h"
-
+// standard library includes
 #include <vector>
 #include <iostream>
 #include <fstream>
 #include <filesystem>
 #include <string>
 
+// project header
+#include "TemperatureRow.h"
 
+
+// create the CsvReader class specification
 class CsvReader
 {
 public:
-	CsvReader();
+	CsvReader(); // declare the constructor
 
 	static std::filesystem::path getFilePath();
 	static std::vector<TemperatureRow> readcsv(std::filesystem::path filePath);

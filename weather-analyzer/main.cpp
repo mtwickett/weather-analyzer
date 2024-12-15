@@ -1,5 +1,4 @@
 #include "CsvReader.h"
-#include "TemperatureRow.h"
 
 
 int main()
