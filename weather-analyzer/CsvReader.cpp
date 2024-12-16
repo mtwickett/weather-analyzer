@@ -15,7 +15,7 @@ std::filesystem::path CsvReader::getFilePath()
 }
 
 
-std::vector<TemperatureRow> CsvReader::readcsv(std::filesystem::path filePath)
+std::vector<TemperatureRow> CsvReader::readcsv(const std::filesystem::path filePath)
 {
 	static const std::map<std::string, std::string> countryCodeMap = {
 	{"AT_temperature", "Austria"},
