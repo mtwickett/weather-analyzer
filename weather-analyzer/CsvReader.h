@@ -19,7 +19,7 @@ public:
 	// declaring the constructor CsvReader(); is not necessary because all 
 	// the methods are static and do not require an instance of the class 
 	
-	static std::filesystem::path getFilePath(); // gets the csv/txt file path 
+	static std::filesystem::path getFilePath(std::string fileName); // gets the csv/txt file path 
 
 	// opens and reads the csv file, calls the tokenize() and stringsToTempRow() 
 	// methods to return a vector of class type TemperatureRow
@@ -30,6 +30,6 @@ public:
 
 private:
 	// converts the tokenized file line and file headers to a TemperatureRow
-	static TemperatureRow stringsToTempRow(std::vector<std::string> rowTokens, std::vector<std::string> headers);
+	static TemperatureRow stringsToTempRow(std::vector<std::string> rowTokens);
 };
 

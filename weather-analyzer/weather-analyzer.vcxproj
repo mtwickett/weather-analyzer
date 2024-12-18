@@ -137,6 +137,7 @@
     <ClInclude Include="TemperatureRow.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="data\test.csv" />
     <None Include="data\weather_data_EU_1980-2019_temp_only.csv" />
     <None Include="weather_data_EU_1980-2019_temp_only.csv" />
   </ItemGroup>
