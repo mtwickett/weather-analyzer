@@ -45,7 +45,7 @@ class TemperatureRow
 // declare the constructor using const as the values do not need to be altered 
 // use call by reference so that copies 
 public:
-    TemperatureRow(const std::string _timestamp, const std::vector<double>& _temperatures);
+    TemperatureRow(const std::string& _timestamp, const std::vector<double>& _temperatures);
     std::vector<std::string> countries = {
         "Austria",
         "Belgium",
@@ -77,15 +77,14 @@ public:
         "Slovakia"
     };
 
-    /*std::string getUtcTimestamp() const;
+    std::string getTimestamp() const;
     int getYear() const;
     int getMonth() const;
     int getDay() const;
-    double getTemperature(const std::string& countryCode) const;*/
+    int getHour() const;
 
     void printRow();
 
-private:
     std::string timestamp;
     std::vector<double> temperatures;
 };

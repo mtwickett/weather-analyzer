@@ -39,7 +39,7 @@ std::vector<TemperatureRow> CsvReader::readcsv(const std::filesystem::path fileP
 			}
 		}
 	}
-	std::cout << "csvReader::readcsv read " << rows.size() << " rows" << std::endl;
+	std::cout << "CsvReader::readcsv read " << rows.size() << " rows" << std::endl;
 
 	return rows;
 }
