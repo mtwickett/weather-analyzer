@@ -132,10 +132,12 @@
     <ClCompile Include="CsvReader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TemperatureRow.cpp" />
+    <ClCompile Include="WeatherAnalyzerMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CsvReader.h" />
     <ClInclude Include="TemperatureRow.h" />
+    <ClInclude Include="WeatherAnalyzerMain.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="data\test.csv" />

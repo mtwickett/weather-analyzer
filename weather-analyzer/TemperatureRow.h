@@ -46,6 +46,19 @@ class TemperatureRow
 // use call by reference so that copies 
 public:
     TemperatureRow(const std::string& _timestamp, const std::vector<double>& _temperatures);
+    
+    std::string getTimestamp() const;
+    int getYear() const;
+    int getMonth() const;
+    int getDay() const;
+    int getHour() const;
+
+    void printRow();
+
+    std::string timestamp;
+    std::vector<double> temperatures;
+
+private:
     std::vector<std::string> countries = {
         "Austria",
         "Belgium",
@@ -77,15 +90,5 @@ public:
         "Slovakia"
     };
 
-    std::string getTimestamp() const;
-    int getYear() const;
-    int getMonth() const;
-    int getDay() const;
-    int getHour() const;
-
-    void printRow();
-
-    std::string timestamp;
-    std::vector<double> temperatures;
 };
 

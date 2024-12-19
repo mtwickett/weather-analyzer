@@ -24,12 +24,18 @@
     <ClCompile Include="TemperatureRow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WeatherAnalyzerMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CsvReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TemperatureRow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WeatherAnalyzerMain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
