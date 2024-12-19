@@ -4,12 +4,8 @@
 WeatherAnalyzerMain::WeatherAnalyzerMain()
 {
     OPTIONS = {
-        {"1", &WeatherAnalyzerMain::instructions},
-        {"2", &WeatherAnalyzerMain::getExchangeStats},
-        {"3", &WeatherAnalyzerMain::makeAnAsk},
-        {"4", &WeatherAnalyzerMain::makeABid},
-        {"5", &WeatherAnalyzerMain::getWallet},
-        {"6", &WeatherAnalyzerMain::getNextTimeFrame}
+        {"1", &WeatherAnalyzerMain::about},
+        {"2", &WeatherAnalyzerMain::getTemperature}
     };
 }
 
@@ -26,136 +22,46 @@ void WeatherAnalyzerMain::init()
 }
 
 
-void WeatherAnalyzerMain::instructions()
+void WeatherAnalyzerMain::about()
 {
-    std::cout << "Your aim is to make money" << std::endl;
+    std::cout << "Check weather temperatures in European countries" << std::endl;
 }
 
 
-void WeatherAnalyzerMain::getExchangeStats()
+void WeatherAnalyzerMain::getTemperature()
 {
-    for (std::string const& p : orderBook.getProducts())
-    {
-        std::cout << p << std::endl;
-        std::vector<OrderBookEntry> entries = orderBook.getOrders(OrderBookType::ask,
-            p,
-            currentTime);
+    std::vector<std::string> prompts = { "country", "year", "month", "day", "hour"};
+    std::vector<std::string> userInputs;
 
-        double highPrice = orderBook.getHighPrice(entries);
-        double lowPrice = orderBook.getLowPrice(entries);
-        double averagePrice = orderBook.getAveragePrice(entries);
-        double numberOfEntries = entries.size();
-        double priceSpread = highPrice - lowPrice;
+    std::cout << "---Input instructions---\n" << std::endl;
+    std::cout << "Enter country as: (Austria)" << std::endl;
+    std::cout << "Enter Year as: XXXX (1980-2019)" << std::endl;
+    std::cout << "Enter Month as: XX (01-12)" << std::endl;
+    std::cout << "Enter Day as: XX (01-31)" << std::endl;
+    std::cout << "Enter Hour as: XX (00-23)" << std::endl;
 
-
-        std::cout << "There are " << numberOfEntries << " asks" << std::endl;
-        std::cout << "High ask: " << highPrice << std::endl;
-        std::cout << "Low ask: " << lowPrice << std::endl;
-        std::cout << "Average ask: " << averagePrice << std::endl;
-        std::cout << "Ask spread: " << priceSpread << std::endl;
+    for (auto& prompt : prompts) {
+        std::string input;
+        std::cout << "Enter " << prompt << ": " << std::endl;
+        std::getline(std::cin, input);
+        userInputs.push_back(input);
     }
-}
-
-
-void WeatherAnalyzerMain::makeAnAsk()
-{
-    std::cout << "Make an ask: [product,price,amount] .eg. BTC/USDT,5000,0.3" << std::endl;
-    std::string input;
-    std::getline(std::cin, input);
-    std::cout << "You choose: " << input << std::endl;
-
-    std::vector<std::string> tokens = csvReader::tokenize(input, ',');
-    if (tokens.size() != 3)
-    {
-        std::cout << "You must enter 3 items" << std::endl;
-    }
-    else
-    {
-        try
-        {
-            OrderBookEntry obe = csvReader::stringsToOBE(tokens[1],
-                tokens[2],
-                currentTime,
-                tokens[0],
-                OrderBookType::ask);
-            if (wallet.canFulfillOrder(obe))
-            {
-                std::cout << "Wallet contains funds - fulfilling order." << std::endl;
-                orderBook.insertOrder(obe);
-            }
-            else
-            {
-                std::cout << "Insufficient funds." << std::endl;
-            }
-        }
-        catch (const std::exception& e)
-        {
-            std::cout << "Bad Input: MerkelMain::makeAnAsk" << std::endl;
-        }
-
+    
+    std::string country;
+    for (auto& u : userInputs[0]) {
+        country += std::toupper(u);
     }
 
-}
+    std::string timestamp = userInputs[1] +
+        "-" +
+        userInputs[2] +
+        "-" +
+        userInputs[3] +
+        "T" +
+        userInputs[4] +
+        ":00:00Z";
 
 
-void WeatherAnalyzerMain::makeABid()
-{
-    std::cout << "Make an bid: [product,price,amount] .eg. BTC/USDT,5000,0.3" << std::endl;
-    std::string input;
-    std::getline(std::cin, input);
-    std::cout << "You choose: " << input << std::endl;
-
-    std::vector<std::string> tokens = csvReader::tokenize(input, ',');
-    if (tokens.size() != 3)
-    {
-        std::cout << "You must enter 3 items" << std::endl;
-    }
-    else
-    {
-        try
-        {
-            OrderBookEntry obe = csvReader::stringsToOBE(tokens[1],
-                tokens[2],
-                currentTime,
-                tokens[0],
-                OrderBookType::bid);
-            if (wallet.canFulfillOrder(obe))
-            {
-                std::cout << "Wallet contains funds - fulfilling order." << std::endl;
-                orderBook.insertOrder(obe);
-            }
-            else
-            {
-                std::cout << "Insufficient funds." << std::endl;
-            }
-        }
-        catch (const std::exception& e)
-        {
-            std::cout << "Bad Input: MerkelMain::makeAnBid" << std::endl;
-        }
-
-    }
-}
-
-
-void WeatherAnalyzerMain::getWallet()
-{
-    std::cout << wallet.toString() << std::endl;
-}
-
-
-void WeatherAnalyzerMain::getNextTimeFrame()
-{
-    std::cout << "Going to next time frame..." << std::endl;
-    std::vector<OrderBookEntry> sales = orderBook.matchAsksToBids("ETH/BTC", currentTime);
-    std::cout << "Total Sales: " << sales.size() << std::endl;
-    for (OrderBookEntry& sale : sales)
-    {
-        std::cout << "Price: " << sale.price << std::endl;
-        std::cout << "Amount: " << sale.amount << std::endl;
-    }
-
-    currentTime = orderBook.getNextTime(currentTime);
 }
 
 
@@ -165,9 +71,9 @@ void WeatherAnalyzerMain::printMenu()
         "=======================",
         "Please enter an option 1-6 or press e to exit",
         "=======================",
-        "1: Print help",
-        "2: Print exchange stats",
-        "3: Make an ask",
+        "1: About",
+        "2: Get a temperature",
+        "3: Print Candlestick data",
         "4: Make a bid",
         "5: Print wallet",
         "6: Continue",
@@ -177,8 +83,6 @@ void WeatherAnalyzerMain::printMenu()
     for (const auto& option : MENU) {
         std::cout << option << std::endl;
     }
-
-    std::cout << "Current time: " << currentTime << std::endl;
 }
 
 

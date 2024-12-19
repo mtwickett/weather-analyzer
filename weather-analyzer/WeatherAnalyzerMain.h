@@ -18,12 +18,8 @@ public:
     void init();
 
 private:
-    void instructions();
-    void getExchangeStats();
-    void makeAnAsk();
-    void makeABid();
-    void getWallet();
-    void getNextTimeFrame();
+    void about();
+    void getTemperature();
     void printMenu();
     std::string processOption();
 
