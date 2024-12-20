@@ -20,6 +20,7 @@ public:
 private:
     void about();
     void getTemperature();
+    void getCandlestickData();
     void printMenu();
     std::string processOption();
 

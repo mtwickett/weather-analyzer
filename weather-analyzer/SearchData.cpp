@@ -6,10 +6,10 @@
 int SearchData::getRowIndex(const std::vector<TemperatureRow>& rows, 
 				const std::string& searchTimestamp)
 {
-	int left = 0, right = rows.size() - 1;
+	int left = 0, right = int(rows.size() - 1);
 
 	while (left <= right) {
-		int mid = floor((left + right) / 2);
+		int mid = int(floor((left + right) / 2));
 		std::string tsMid = rows[mid].timestamp;
 
 		if (searchTimestamp == tsMid)
@@ -36,6 +36,7 @@ std::vector<TemperatureRow> SearchData::getRowsByYear(const std::vector<Temperat
 		else if (rowYear > year)
 			break;
 	}
+	return rowsByYear;
 }
 
 
@@ -50,4 +51,5 @@ std::vector<TemperatureRow> SearchData::getRowsByMonth(const std::vector<Tempera
 		else if (rowMonth > month)
 			break;
 	}
+	return rowsByMonth;
 }

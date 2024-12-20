@@ -6,7 +6,8 @@ WeatherAnalyzerMain::WeatherAnalyzerMain()
 {
     OPTIONS = {
         {"1", &WeatherAnalyzerMain::about},
-        {"2", &WeatherAnalyzerMain::getTemperature}
+        {"2", &WeatherAnalyzerMain::getTemperature},
+        {"3", &WeatherAnalyzerMain::getCandlestickData}
     };
 }
 
@@ -29,65 +30,6 @@ void WeatherAnalyzerMain::init()
 
     } while (option != "e");
     std::cout << "Exiting options" << std::endl;
-}
-
-
-void WeatherAnalyzerMain::about()
-{
-    std::cout << "Check weather temperatures in European countries" << std::endl;
-}
-
-
-void WeatherAnalyzerMain::getTemperature()
-{
-    std::vector<std::string> prompts = { "country", "year", "month", "day", "hour"};
-    std::vector<std::string> userInputs;
-
-    std::cout << "---Input instructions---\n" << std::endl;
-    std::cout << "Enter country as: (Austria)" << std::endl;
-    std::cout << "Enter Year as: XXXX (1980-2019)" << std::endl;
-    std::cout << "Enter Month as: XX (01-12)" << std::endl;
-    std::cout << "Enter Day as: XX (01-31)" << std::endl;
-    std::cout << "Enter Hour as: XX (00-23)" << std::endl;
-
-    for (auto& prompt : prompts) {
-        std::string input;
-        std::cout << "Enter " << prompt << ": " << std::endl;
-        std::getline(std::cin, input);
-        userInputs.push_back(input);
-    }
-    
-    std::string country;
-    for (auto& u : userInputs[0]) {
-        country += std::toupper(u);
-    }
-
-
-    std::string timestamp = userInputs[1] +
-        "-" +
-        userInputs[2] +
-        "-" +
-        userInputs[3] +
-        "T" +
-        userInputs[4] +
-        ":00:00Z";
-
-    std::cout << timestamp << ": " << country << std::endl;
-
-    double temp;
-    try
-    {
-        int rowIndex = SearchData::getRowIndex(rows, timestamp);
-        unsigned int tempIndex = TemperatureRow::countries.at(country);
-        std::cout << tempIndex << std::endl;
-        temp = rows[rowIndex].temperatures[tempIndex];
-        std::cout << temp << std::endl;
-    }
-    catch (const std::exception&)
-    {
-        std::cout << "didn't work" << std::endl;
-    }
-
 }
 
 
@@ -125,3 +67,76 @@ std::string WeatherAnalyzerMain::processOption()
     }
     return option;
 }
+
+
+void WeatherAnalyzerMain::about()
+{
+    std::cout << "Check weather temperatures in European countries" << std::endl;
+}
+
+
+void WeatherAnalyzerMain::getTemperature()
+{
+    std::vector<std::string> prompts = { 
+        "Enter country as: (Austria)", 
+        "Enter Year as: XXXX (1980-2019)", 
+        "Enter Month as: XX (01-12)", 
+        "Enter Day as: XX (01-31)", 
+        "Enter Hour as: XX (00-23)" };
+    std::vector<std::string> userInputs;
+
+    std::cout << "---Input instructions---\n" << std::endl;
+    for (auto& prompt : prompts) {
+        std::string input;
+        std::cout << prompt << std::endl;
+        std::getline(std::cin, input);
+        userInputs.push_back(input);
+    }
+    
+    std::string country;
+    for (auto& u : userInputs[0]) {
+        country += std::toupper(u);
+    }
+
+
+    std::string timestamp = userInputs[1] +
+        "-" +
+        userInputs[2] +
+        "-" +
+        userInputs[3] +
+        "T" +
+        userInputs[4] +
+        ":00:00Z";
+
+    std::cout << "You chose " << country << " at " << timestamp << std::endl;
+
+    double temp;
+    try
+    {
+        int rowIndex = SearchData::getRowIndex(rows, timestamp);
+        unsigned int tempIndex = TemperatureRow::countries.at(country);
+        temp = rows[rowIndex].temperatures[tempIndex];
+        std::cout << "Temperature Degrees Celcius: " << temp << std::endl;
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << "didn't work" << e.what() << std::endl;
+    }
+}
+
+
+void WeatherAnalyzerMain::getCandlestickData()
+{
+    std::string country;
+
+    std::cout << "---Input instructions---\n" << std::endl;
+    std::cout << "Enter country as: (Austria)" << std::endl;
+    std::getline(std::cin, country);
+    for (auto& u : country) {
+        u = std::toupper(u);
+    }
+
+    std::cout << country << std::endl;
+}
+
+

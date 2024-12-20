@@ -14,5 +14,6 @@ public:
 		const std::string& year);
 	std::vector<TemperatureRow> getRowsByMonth(const std::vector<TemperatureRow>& rows,
 		const std::string& month);
+
 };
 
