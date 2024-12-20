@@ -2,6 +2,7 @@
 
 #include <cmath>
 
+
 int SearchData::getRowIndex(const std::vector<TemperatureRow>& rows, 
 				const std::string& searchTimestamp)
 {
@@ -21,4 +22,32 @@ int SearchData::getRowIndex(const std::vector<TemperatureRow>& rows,
 	}
 
 	return -1;
+}
+
+
+std::vector<TemperatureRow> SearchData::getRowsByYear(const std::vector<TemperatureRow>& rows,
+	const std::string& year)
+{
+	std::vector<TemperatureRow> rowsByYear;
+	for (const auto& row : rows) {
+		std::string rowYear = row.getYear();
+		if (rowYear == year)
+			rowsByYear.push_back(row);
+		else if (rowYear > year)
+			break;
+	}
+}
+
+
+std::vector<TemperatureRow> SearchData::getRowsByMonth(const std::vector<TemperatureRow>& rows,
+	const std::string& month)
+{
+	std::vector<TemperatureRow> rowsByMonth;
+	for (const auto& row : rows) {
+		std::string rowMonth = row.getMonth();
+		if (rowMonth == month)
+			rowsByMonth.push_back(row);
+		else if (rowMonth > month)
+			break;
+	}
 }

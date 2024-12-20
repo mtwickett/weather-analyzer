@@ -16,10 +16,10 @@ public:
     TemperatureRow(const std::string& _timestamp, const std::vector<double>& _temperatures);
     
     std::string getTimestamp() const;
-    int getYear() const;
-    int getMonth() const;
-    int getDay() const;
-    int getHour() const;
+    std::string getYear() const;
+    std::string getMonth() const;
+    std::string getDay() const;
+    std::string getHour() const;
 
     void printRow();
 

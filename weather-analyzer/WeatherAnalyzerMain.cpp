@@ -72,11 +72,15 @@ void WeatherAnalyzerMain::getTemperature()
         userInputs[4] +
         ":00:00Z";
 
+    std::cout << timestamp << ": " << country << std::endl;
+
     double temp;
     try
     {
-        int index = SearchData::getRowIndex(rows, timestamp);
-        temp = rows[index].temperatures[TemperatureRow::countries.at(country)];
+        int rowIndex = SearchData::getRowIndex(rows, timestamp);
+        unsigned int tempIndex = TemperatureRow::countries.at(country);
+        std::cout << tempIndex << std::endl;
+        temp = rows[rowIndex].temperatures[tempIndex];
         std::cout << temp << std::endl;
     }
     catch (const std::exception&)
