@@ -1,6 +1,5 @@
 #include "WeatherAnalyzerMain.h"
 #include "SearchData.h"
-#include "TemperatureRow.h"
 
 
 WeatherAnalyzerMain::WeatherAnalyzerMain()
@@ -77,13 +76,13 @@ void WeatherAnalyzerMain::getTemperature()
     try
     {
         int index = SearchData::getRowIndex(rows, timestamp);
-        rows[index].temperatures[TemperatureRow::countries]
+        temp = rows[index].temperatures[TemperatureRow::countries.at(country)];
+        std::cout << temp << std::endl;
     }
     catch (const std::exception&)
     {
-
+        std::cout << "didn't work" << std::endl;
     }
-    std::cout << 
 
 }
 

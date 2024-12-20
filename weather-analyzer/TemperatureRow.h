@@ -26,7 +26,7 @@ public:
     std::string timestamp;
     std::vector<double> temperatures;
 
-private:
+
     static const std::map<std::string, unsigned int> countries;
 };
 
