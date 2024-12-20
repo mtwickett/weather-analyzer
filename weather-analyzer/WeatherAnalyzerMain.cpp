@@ -1,4 +1,6 @@
 #include "WeatherAnalyzerMain.h"
+#include "SearchData.h"
+#include "TemperatureRow.h"
 
 
 WeatherAnalyzerMain::WeatherAnalyzerMain()
@@ -12,6 +14,15 @@ WeatherAnalyzerMain::WeatherAnalyzerMain()
 
 void WeatherAnalyzerMain::init()
 {
+    try
+    {
+        rows = CsvReader::readcsv(CsvReader::getFilePath("utc_timestamp,AT_temperature,BE_tem.txt"));
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << "Exception caught: " << e.what() << std::endl;
+    }
+
     std::string option;
     do {
         printMenu();
@@ -52,6 +63,7 @@ void WeatherAnalyzerMain::getTemperature()
         country += std::toupper(u);
     }
 
+
     std::string timestamp = userInputs[1] +
         "-" +
         userInputs[2] +
@@ -61,6 +73,17 @@ void WeatherAnalyzerMain::getTemperature()
         userInputs[4] +
         ":00:00Z";
 
+    double temp;
+    try
+    {
+        int index = SearchData::getRowIndex(rows, timestamp);
+        rows[index].temperatures[TemperatureRow::countries]
+    }
+    catch (const std::exception&)
+    {
+
+    }
+    std::cout << 
 
 }
 

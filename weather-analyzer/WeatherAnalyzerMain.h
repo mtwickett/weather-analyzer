@@ -24,6 +24,6 @@ private:
     std::string processOption();
 
     std::map<std::string, void(WeatherAnalyzerMain::*)()> OPTIONS;
-    OrderBook orderBook{ "test.csv" };
+    std::vector<TemperatureRow> rows;
 };
 

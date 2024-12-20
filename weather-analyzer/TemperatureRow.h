@@ -7,38 +7,6 @@
 #include <vector>
 
 
-enum Headers {
-    AUSTRIA,
-    BELGIUM,
-    BULGARIA,
-    SWITZERLAND,
-    CZECH_REPUBLIC,
-    GERMANY,
-    DENMARK,
-    ESTONIA,
-    SPAIN,
-    FINLAND,
-    FRANCE,
-    UNITED_KINGDOM,
-    GREECE,
-    CROATIA,
-    HUNGARY,
-    IRELAND,
-    ITALY,
-    LITHUANIA,
-    LUXEMBOURG,
-    LATVIA,
-    NETHERLANDS,
-    NORWAY,
-    POLAND,
-    PORTUGAL,
-    ROMANIA,
-    SWEDEN,
-    SLOVENIA,
-    SLOVAKIA
-};
-
-
 // create the Temperature class specification
 class TemperatureRow
 {
@@ -59,36 +27,6 @@ public:
     std::vector<double> temperatures;
 
 private:
-    std::vector<std::string> countries = {
-        "Austria",
-        "Belgium",
-        "Bulgaria",
-        "Switzerland",
-        "Czech_republic",
-        "Germany",
-        "Denmark",
-        "Estonia",
-        "Spain",
-        "Finland",
-        "France",
-        "United_kingdom",
-        "Greece",
-        "Croatia",
-        "Hungary",
-        "Ireland",
-        "Italy",
-        "Lithuania",
-        "Luxembourg",
-        "Latvia",
-        "Netherlands",
-        "Norway",
-        "Poland",
-        "Portugal",
-        "Romania",
-        "Sweden",
-        "Slovenia",
-        "Slovakia"
-    };
-
+    static const std::map<std::string, unsigned int> countries;
 };
 

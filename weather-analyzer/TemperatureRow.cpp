@@ -10,6 +10,36 @@ TemperatureRow::TemperatureRow(const std::string& _timestamp, const std::vector<
 
 }
 
+const std::map<std::string, unsigned int> TemperatureRow::countries = {
+    {"Austria", 0},
+    {"Belgium", 1},
+    {"Bulgaria", 2},
+    {"Switzerland", 3},
+    {"Czech_republic", 4},
+    {"Germany", 5},
+    {"Denmark", 6},
+    {"Estonia", 7},
+    {"Spain", 8},
+    {"Finland", 9},
+    {"France", 10},
+    {"United_kingdom", 11},
+    {"Greece", 12},
+    {"Croatia", 13},
+    {"Hungary", 14},
+    {"Ireland", 15},
+    {"Italy", 16},
+    {"Lithuania", 17},
+    {"Luxembourg", 18},
+    {"Latvia", 19},
+    {"Netherlands", 20},
+    {"Norway", 21},
+    {"Poland", 22},
+    {"Portugal", 23},
+    {"Romania", 24},
+    {"Sweden", 25},
+    {"Slovenia", 26},
+    {"Slovakia", 27}
+};
 
 // Getter for timestamp
 std::string TemperatureRow::getTimestamp() const {
@@ -38,8 +68,8 @@ int TemperatureRow::getHour() const {
 
 void TemperatureRow::printRow() {
     std::cout << "UTC Timestamp: " << timestamp << "\n";
-    for (size_t i = 0; i < temperatures.size(); ++i) {
-        std::cout << countries[i] << ": " << temperatures[i] << std::endl;
+    for (const auto& pair : countries) {
+        std::cout << pair.first << ": " << temperatures[pair.second] << std::endl;
     }
 }
 

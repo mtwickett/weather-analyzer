@@ -129,13 +129,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Candlestick.cpp" />
     <ClCompile Include="CsvReader.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="SearchData.cpp" />
     <ClCompile Include="TemperatureRow.cpp" />
     <ClCompile Include="WeatherAnalyzerMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Candlestick.h" />
     <ClInclude Include="CsvReader.h" />
+    <ClInclude Include="SearchData.h" />
     <ClInclude Include="TemperatureRow.h" />
     <ClInclude Include="WeatherAnalyzerMain.h" />
   </ItemGroup>
