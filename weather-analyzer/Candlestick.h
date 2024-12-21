@@ -13,7 +13,5 @@ public:
 	double high;
 	double low;
 
-	double getAverage();
-
 };
 

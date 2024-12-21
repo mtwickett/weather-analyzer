@@ -133,6 +133,7 @@
     <ClCompile Include="CsvReader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SearchData.cpp" />
+    <ClCompile Include="Statistics.cpp" />
     <ClCompile Include="TemperatureRow.cpp" />
     <ClCompile Include="WeatherAnalyzerMain.cpp" />
   </ItemGroup>
@@ -140,6 +141,7 @@
     <ClInclude Include="Candlestick.h" />
     <ClInclude Include="CsvReader.h" />
     <ClInclude Include="SearchData.h" />
+    <ClInclude Include="Statistics.h" />
     <ClInclude Include="TemperatureRow.h" />
     <ClInclude Include="WeatherAnalyzerMain.h" />
   </ItemGroup>

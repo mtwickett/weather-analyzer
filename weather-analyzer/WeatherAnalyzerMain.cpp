@@ -1,5 +1,6 @@
 #include "WeatherAnalyzerMain.h"
-#include "SearchData.h"
+#include "Candlestick.h"
+#include "Statistics.h"
 
 
 WeatherAnalyzerMain::WeatherAnalyzerMain()
@@ -136,7 +137,9 @@ void WeatherAnalyzerMain::getCandlestickData()
         u = std::toupper(u);
     }
 
-    std::cout << country << std::endl;
+    std::cout << "You chose: " << country << std::endl;
+    unsigned int tempIndex = TemperatureRow::countries.at(country);
+    
 }
 
 

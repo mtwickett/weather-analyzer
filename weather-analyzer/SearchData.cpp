@@ -53,3 +53,19 @@ std::vector<TemperatureRow> SearchData::getRowsByMonth(const std::vector<Tempera
 	}
 	return rowsByMonth;
 }
+
+
+std::map <std::string, std::vector<double>> getTempsByYear(const std::vector<TemperatureRow>& rows,
+	unsigned int countryIndex)
+{
+	std::map<std::string, std::vector<double>> yearTemps;
+	std::string currentYear = rows[0].getYear();
+	std::vector<double> temps;
+
+
+	for (const auto& row : rows) {
+		if (currentYear == row.getYear())
+			temps.push_back(row.temperatures)
+	}
+
+}

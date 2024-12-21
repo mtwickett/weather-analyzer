@@ -7,9 +7,3 @@ Candlestick::Candlestick(int _year, double _open, double _close, double _high, d
 {
 
 }
-
-
-double Candlestick::getAverage()
-{
-    return 0.5;
-}
