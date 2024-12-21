@@ -138,8 +138,8 @@ void WeatherAnalyzerMain::getCandlestickData()
     }
 
     std::cout << "You chose: " << country << std::endl;
-    unsigned int tempIndex = TemperatureRow::countries.at(country);
-    
+    unsigned int countryIndex = TemperatureRow::countries.at(country);
+    std::map<std::string, std::vector<double>> yearToTempsMap = SearchData::getTempsByYear(rows, countryIndex);
 }
 
 
