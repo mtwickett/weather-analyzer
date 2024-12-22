@@ -2,6 +2,9 @@
 #include "Candlestick.h"
 #include "Statistics.h"
 
+#include <iomanip>
+#include <iostream>
+
 
 WeatherAnalyzerMain::WeatherAnalyzerMain()
 {
@@ -17,7 +20,7 @@ void WeatherAnalyzerMain::init()
 {
     try
     {
-        rows = CsvReader::readcsv(CsvReader::getFilePath("utc_timestamp,AT_temperature,BE_tem.txt"));
+        rows = CsvReader::readcsv(CsvReader::getFilePath("weather_data_EU_1980-2019_temp_only.csv"));
     }
     catch (const std::exception& e)
     {
@@ -141,10 +144,15 @@ void WeatherAnalyzerMain::getCandlestickData()
     unsigned int countryIndex = TemperatureRow::countries.at(country);
     std::map<std::string, std::vector<double>> yearToTempsMap = SearchData::getTempsByYear(rows, countryIndex);
 
-    // get open
+    std::vector<Candlestick> candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
 
-    double open;
-    
+    std::cout << "YEAR |  OPEN |  CLOSE |  HIGH  |  LOW" << std::endl;
+    std::cout << "---------------------------------------" << std::endl;
+    for (const auto& c : candlesticks) {
+        std::cout << std::fixed << std::setprecision(3) << 
+            c.year << " | " << c.open << " | " << c.close <<
+            " | " << c.high << " | " <<c.low << std::endl;
+    }
 }
 
 

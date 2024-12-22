@@ -11,8 +11,10 @@ class Statistics
 {
 
 public:
-	static std::vector<double> getMeanHighLow(const std::vector<double>& temps);
 	static std::vector<Candlestick> calculateCandlesticks(const std::map<std::string, 
 		std::vector<double>>& yearToTempsMap);
+
+private:
+	static std::vector<double> getMeanHighLow(const std::vector<double>& temps);
 };
 
