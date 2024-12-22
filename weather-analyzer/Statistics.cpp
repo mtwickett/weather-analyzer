@@ -30,10 +30,10 @@ std::vector<double> Statistics::getMeanHighLow(const std::vector<double>& temps)
 }
 
 
-std::vector<int> Statistics::calculateYAxisScale(const std::vector<Candlestick>& candlesticks)
+std::map<int, std::vector<int>, std::greater<int>> Statistics::calculateYAxisScale(const std::vector<Candlestick>& candlesticks)
 {
 	// calculate y-axis scale
-	std::vector<int> yAxis;
+	std::map<int, std::vector<int>, std::greater<int>> yAxis;
 	double yAxisMax = 0.0;
 	double yAxisMin = 0.0;
 	for (const auto& c : candlesticks) {
@@ -52,10 +52,9 @@ std::vector<int> Statistics::calculateYAxisScale(const std::vector<Candlestick>&
 		yAxisMaxScaled += 1;
 	}
 
-	for (int i = yAxisMinScaled; i <= yAxisMaxScaled; i += 2)
-		yAxis.push_back(i);
-
-	std::reverse(yAxis.begin(), yAxis.end());
+	for (int i = yAxisMaxScaled; i >= yAxisMinScaled; i -= 2) {
+		yAxis[i] = {};
+	}
 
 	return yAxis;
 }
@@ -104,13 +103,27 @@ std::vector<std::vector<std::string>> Statistics::getChartData(const std::vector
 {
 	std::vector<std::vector<std::string>> chartData;
 
-	std::vector<int> yAxis = calculateYAxisScale(candlesticks);
+	std::map<int, std::vector<int>, std::greater<int>> yAxis = calculateYAxisScale(candlesticks);
 
 	for (const auto& y : yAxis) {
-		std::cout << y << std::endl;
+		std::cout << y.first << std::endl;
+	}
+
+	for (const auto& c : candlesticks) {
+
 	}
 
 
+
+	
+	// create map <yAxis value> as keys and empty vector as value
+	// for each year in candle sticks, check if static_cast<int>(std::round(temp / 2.0)); and closest even or odd int
+	// equals yAxis value
+	// if close == value then "   =="
+	// else if open
+	// else if high or low == value then "   ||"
+	// else ""
+	
 
 	return chartData;
 }

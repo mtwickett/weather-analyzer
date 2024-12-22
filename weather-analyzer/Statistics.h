@@ -17,6 +17,6 @@ public:
 
 private:
 	static std::vector<double> getMeanHighLow(const std::vector<double>& temps);
-	static std::vector<int> calculateYAxisScale(const std::vector<Candlestick>& candlesticks);
+	static std::map<int, std::vector<int>, std::greater<int>> calculateYAxisScale(const std::vector<Candlestick>& candlesticks);
 };
 
