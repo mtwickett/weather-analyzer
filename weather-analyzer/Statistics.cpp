@@ -4,44 +4,46 @@
 #include <algorithm>
 
 
-double Statistics::getAverage(std::vector<double> temps)
+
+std::vector<double> getMeanHighLow(const std::vector<double>& temps)
 {
 	if (temps.empty()) {
-		return 0.0;
+		return { 0.0, 0.0, 0.0 };
 	}
-	double sum = std::accumulate(temps.begin(), temps.end(), 0.0);
-	return sum / temps.size();
-}
 
+	double sum = 0.0;
+	double high = temps[0];
+	double low = temps[0];
 
-double Statistics::getHigh(std::vector<double> temps)
-{
-	if (temps.empty()) {
-		return 0.0;
+	for (double t : temps) {
+		sum += t;
+		if (t > high)
+			high = t;
+		if (t < low)
+			low = t;
 	}
-	return *std::max_element(temps.begin(), temps.end());
-}
 
-
-double Statistics::getLow(std::vector<double> temps)
-{
-	if (temps.empty()) {
-		return 0.0;
-	}
-	return *std::min_element(temps.begin(), temps.end());
+	return { sum / temps.size(), high, low };
 }
 
 
 std::vector<Candlestick> calculateCandlesticks(std::map<std::string, 
-	std::vector<double>> yearToTempsMap)
+	std::vector<double>>& yearToTempsMap)
 {
+	std::vector<double> MeanHighLow;
 	std::string year;
 	double open;
 	double close;
 	double high;
 	double low;
 
+	for (const auto& pair : yearToTempsMap) {
+		MeanHighLow = Statistics::getMeanHighLow(pair.second);
+		year = pair.first;
 
+		high = MeanHighLow[1];
+		low = MeanHighLow[2];
+	}
 
 
 }

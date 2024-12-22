@@ -6,13 +6,13 @@
 #include <map>
 #include <string>
 
+
 class Statistics
 {
+
 public:
-	static double getAverage(std::vector<double> temps);
-	static double getHigh(std::vector<double> temps);
-	static double getLow(std::vector<double> temps);
-	static std::vector<Candlestick> calculateCandlesticks(std::map<std::string, 
-		std::vector<double>> yearToTempsMap);
+	static std::vector<double> getMeanHighLow(const std::vector<double>& temps);
+	static std::vector<Candlestick> calculateCandlesticks(const std::map<std::string, 
+		std::vector<double>>& yearToTempsMap);
 };
 
