@@ -11,7 +11,8 @@ WeatherAnalyzerMain::WeatherAnalyzerMain()
     OPTIONS = {
         {"1", &WeatherAnalyzerMain::about},
         {"2", &WeatherAnalyzerMain::getTemperature},
-        {"3", &WeatherAnalyzerMain::getCandlestickData}
+        {"3", &WeatherAnalyzerMain::printCandlestickData},
+        {"4", &WeatherAnalyzerMain::printCandlestickChart}
     };
 }
 
@@ -46,7 +47,7 @@ void WeatherAnalyzerMain::printMenu()
         "1: About",
         "2: Get a temperature",
         "3: Print Candlestick data",
-        "4: Make a bid",
+        "4: Print Candlestick Chart",
         "5: Print wallet",
         "6: Continue",
         "======================="
@@ -129,7 +130,7 @@ void WeatherAnalyzerMain::getTemperature()
 }
 
 
-void WeatherAnalyzerMain::getCandlestickData()
+void WeatherAnalyzerMain::printCandlestickData()
 {
     std::string country;
 
@@ -153,6 +154,29 @@ void WeatherAnalyzerMain::getCandlestickData()
             c.year << " | " << c.open << " | " << c.close <<
             " | " << c.high << " | " <<c.low << std::endl;
     }
+}
+
+
+void WeatherAnalyzerMain::printCandlestickChart()
+{
+    std::string country;
+
+    std::cout << "---Input instructions---\n" << std::endl;
+    std::cout << "Enter country as: (Austria)" << std::endl;
+    std::getline(std::cin, country);
+    for (auto& u : country) {
+        u = std::toupper(u);
+    }
+
+    std::cout << "You chose: " << country << std::endl;
+    unsigned int countryIndex = TemperatureRow::countries.at(country);
+    std::map<std::string, std::vector<double>> yearToTempsMap = SearchData::getTempsByYear(rows, countryIndex);
+
+    std::vector<Candlestick> candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
+
+    std::vector<std::vector<std::string>> test = Statistics::getChartData(candlesticks);
+
+
 }
 
 
