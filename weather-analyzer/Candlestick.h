@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <map>
 
 
 class Candlestick
@@ -14,6 +15,8 @@ public:
 	double close;
 	double high;
 	double low;
+
+	static const std::map<std::string, unsigned int> years;
 
 };
 

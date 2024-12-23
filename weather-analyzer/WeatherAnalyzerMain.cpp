@@ -41,7 +41,7 @@ void WeatherAnalyzerMain::init()
 void WeatherAnalyzerMain::printMenu()
 {
     std::vector<std::string> MENU = {
-        "=======================",
+        "\n=======================",
         "Please enter an option 1-6 or press e to exit",
         "=======================",
         "1: About",
@@ -160,12 +160,31 @@ void WeatherAnalyzerMain::printCandlestickData()
 void WeatherAnalyzerMain::printCandlestickChart()
 {
     std::string country;
-
+    std::string range;
     std::cout << "---Input instructions---\n" << std::endl;
     std::cout << "Enter country as: (Austria)" << std::endl;
     std::getline(std::cin, country);
+
+    std::cout << "Enter a year range (max 20) as: 1980-1999" << std::endl;
+    std::getline(std::cin, range);
+
     for (auto& u : country) {
         u = std::toupper(u);
+    }
+
+    std::string yearStartKey = range.substr(0, 4);
+    std::string yearEndKey = range.substr(5);
+    unsigned int yearStart = 0;
+    unsigned int yearEnd = 0;
+
+    if (Candlestick::years.find(yearStartKey) != Candlestick::years.end() &&
+        Candlestick::years.find(yearEndKey) != Candlestick::years.end()) {
+        yearStart = Candlestick::years.at(yearStartKey);
+        yearEnd = Candlestick::years.at(yearEndKey) + 1;
+
+    }
+    else {
+        std::cerr << "One or both years not found in the map." << std::endl;
     }
 
     std::cout << "You chose: " << country << std::endl;
@@ -174,9 +193,23 @@ void WeatherAnalyzerMain::printCandlestickChart()
 
     std::vector<Candlestick> candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
 
-    std::vector<std::vector<std::string>> test = Statistics::getChartData(candlesticks);
+    std::map<int, std::string, std::greater<int>> test = Statistics::getChartData(candlesticks, yearStart, yearEnd);
 
+    for (const auto& pair : test) {
+        std::cout << std::setw(4) << pair.first << "   " << pair.second << std::endl;
+    }
 
+    auto itStart = Candlestick::years.find(yearStartKey);
+    auto itEnd = Candlestick::years.find(yearEndKey);
+    if (itEnd != Candlestick::years.end()) {
+        ++itEnd;
+    }
+    std::string xAxis = "         ";
+
+    for (auto it = itStart; it != itEnd; ++it) {
+        xAxis += it->first + " ";
+    }
+    std::cout << "\n" << xAxis << std::endl;
 }
 
 
