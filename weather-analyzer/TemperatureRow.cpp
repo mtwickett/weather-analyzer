@@ -57,7 +57,7 @@ std::string TemperatureRow::getMonth() const {
 
 // Parse day from UTC timestamp
 std::string TemperatureRow::getDay() const {
-    return timestamp.substr(5, 10);
+    return timestamp.substr(5, 5);
 }
 
 

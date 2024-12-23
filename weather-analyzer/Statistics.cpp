@@ -56,19 +56,19 @@ std::map<int, std::string, std::greater<int>> Statistics::calculateYAxisScale(co
 
 
 std::vector<Candlestick> Statistics::calculateCandlesticks(const std::map<std::string, 
-	std::vector<double>>& yearToTempsMap)
+	std::vector<double>>& dateToTempsMap)
 {
 	std::vector<Candlestick> candlesticks;
 	
-	if (yearToTempsMap.empty()) {
+	if (dateToTempsMap.empty()) {
 		return candlesticks;
 	}
 
-	const auto& year1980 = *yearToTempsMap.begin();
-	const std::string& year = year1980.first;
-	const std::vector<double>& temps1980 = year1980.second;
+	const auto& firstYear = *dateToTempsMap.begin();
+	const std::string& year = firstYear.first;
+	const std::vector<double>& firstTemps = firstYear.second;
 
-	std::vector<double> meanHighLow = getMeanHighLow(temps1980);
+	std::vector<double> meanHighLow = getMeanHighLow(firstTemps);
 	double open = meanHighLow[0];
 	double close = meanHighLow[0];
 	double high = meanHighLow[1];
@@ -77,7 +77,7 @@ std::vector<Candlestick> Statistics::calculateCandlesticks(const std::map<std::s
 	Candlestick candlestick(year, open, close, high, low);
 	candlesticks.push_back(candlestick);
 
-	for (auto it = std::next(yearToTempsMap.begin()); it != yearToTempsMap.end(); ++it) {
+	for (auto it = std::next(dateToTempsMap.begin()); it != dateToTempsMap.end(); ++it) {
 		const std::string& year = it->first;
 		const std::vector<double>& temps = it->second;
 		meanHighLow = getMeanHighLow(temps);

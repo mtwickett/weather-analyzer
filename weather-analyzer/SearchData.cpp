@@ -1,6 +1,7 @@
 #include "SearchData.h"
 
 #include <cmath>
+#include <iostream>
 
 
 int SearchData::getRowIndex(const std::vector<TemperatureRow>& rows, 
