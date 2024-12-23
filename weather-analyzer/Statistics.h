@@ -13,7 +13,7 @@ class Statistics
 public:
 	static std::vector<Candlestick> calculateCandlesticks(const std::map<std::string, 
 		std::vector<double>>& yearToTempsMap);
-	static std::map<int, std::string, std::greater<int>> getChartData(
+	static std::map<int, std::string, std::greater<int>> getYearlyChartData(
 		const std::vector<Candlestick>& candlesticks,
 		const unsigned int& yearStart,
 		const unsigned int& yearEnd);

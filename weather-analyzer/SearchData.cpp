@@ -78,3 +78,32 @@ std::map <std::string, std::vector<double>> SearchData::getTempsByYear(const std
 
 	return yearTemps;
 }
+
+
+std::map <std::string, std::vector<double>> SearchData::getTempsByDayOfYear(const std::vector<TemperatureRow>& rows,
+	unsigned int countryIndex, std::string day)
+{
+	std::map<std::string, std::vector<double>> dayOfYearTemps;
+	std::string currentYear = rows[0].getYear();
+	std::vector<double> temps;
+
+	for (const auto& row : rows) {
+		if (currentYear == row.getYear()) {
+			if (row.getDay() == day) {
+				temps.push_back(row.temperatures[countryIndex]);
+			}
+		}
+		else {
+			dayOfYearTemps[currentYear] = temps;
+			currentYear = row.getYear();
+			temps.clear();
+			if (row.getDay() == day) {
+				temps.push_back(row.temperatures[countryIndex]);
+			}
+		}
+	}
+
+	dayOfYearTemps[currentYear] = temps;
+
+	return dayOfYearTemps;
+}

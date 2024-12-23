@@ -94,7 +94,7 @@ std::vector<Candlestick> Statistics::calculateCandlesticks(const std::map<std::s
 }
 
 
-std::map<int, std::string, std::greater<int>> Statistics::getChartData(
+std::map<int, std::string, std::greater<int>> Statistics::getYearlyChartData(
 	const std::vector<Candlestick>& candlesticks,
 	const unsigned int& yearStart,
 	const unsigned int& yearEnd)
@@ -120,7 +120,5 @@ std::map<int, std::string, std::greater<int>> Statistics::getChartData(
 		}
 		
 	}
-	
-
 	return chart;
 }

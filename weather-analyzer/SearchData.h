@@ -16,6 +16,8 @@ public:
 		const std::string& month);
 	static std::map <std::string, std::vector<double>> getTempsByYear(const std::vector<TemperatureRow>& rows,
 		unsigned int countryIndex);
+	static std::map <std::string, std::vector<double>> getTempsByDayOfYear(const std::vector<TemperatureRow>& rows,
+		unsigned int countryIndex, std::string day);
 
 };
 

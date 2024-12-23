@@ -19,7 +19,6 @@ public:
     std::string getYear() const;
     std::string getMonth() const;
     std::string getDay() const;
-    std::string getHour() const;
 
     void printRow();
 

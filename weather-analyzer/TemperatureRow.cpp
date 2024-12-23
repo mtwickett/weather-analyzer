@@ -51,18 +51,13 @@ std::string TemperatureRow::getYear() const {
     return timestamp.substr(0, 4); // "1980-01-01T00:00:00Z"
 }
 
-// Parse month from UTC timestamp
 std::string TemperatureRow::getMonth() const {
-    return timestamp.substr(5, 2);
+    return timestamp.substr(5, 2); // "1980-01-01T00:00:00Z"
 }
 
 // Parse day from UTC timestamp
 std::string TemperatureRow::getDay() const {
-    return timestamp.substr(8, 2);
-}
-
-std::string TemperatureRow::getHour() const {
-    return timestamp.substr(11, 13);
+    return timestamp.substr(5, 10);
 }
 
 

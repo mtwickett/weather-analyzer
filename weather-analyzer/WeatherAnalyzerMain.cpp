@@ -133,6 +133,7 @@ void WeatherAnalyzerMain::getTemperature()
 void WeatherAnalyzerMain::printCandlestickData()
 {
     std::string country;
+    std::string filter;
 
     std::cout << "---Input instructions---\n" << std::endl;
     std::cout << "Enter country as: (Austria)" << std::endl;
@@ -143,11 +144,29 @@ void WeatherAnalyzerMain::printCandlestickData()
 
     std::cout << "You chose: " << country << std::endl;
     unsigned int countryIndex = TemperatureRow::countries.at(country);
-    std::map<std::string, std::vector<double>> yearToTempsMap = SearchData::getTempsByYear(rows, countryIndex);
 
-    std::vector<Candlestick> candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
+    // choose by day
+    std::cout << "Choose filter by year or filter by day" << std::endl;
+    std::cout << "For filter by year: Press 1" << std::endl;
+    std::cout << "For filter by day: Press 2" << std::endl;
+    std::getline(std::cin, filter);
 
-    std::cout << "YEAR |  OPEN |  CLOSE |  HIGH  |  LOW" << std::endl;
+    std::map<std::string, std::vector<double>> dateToTempsMap;
+    std::vector<Candlestick> candlesticks;
+    if (filter == "1") {
+        dateToTempsMap = SearchData::getTempsByYear(rows, countryIndex);
+        candlesticks = Statistics::calculateCandlesticks(dateToTempsMap);
+    }
+    else if (filter == "2") {
+        std::string day;
+        std::cout << "Enter a month and day as: 01-01" << std::endl;
+        std::getline(std::cin, day);
+        dateToTempsMap = SearchData::getTempsByDayOfYear(rows, countryIndex, day);
+        candlesticks = Statistics::calculateCandlesticks(dateToTempsMap);
+    }
+    
+
+    std::cout << "DATE |  OPEN |  CLOSE |  HIGH  |  LOW" << std::endl;
     std::cout << "---------------------------------------" << std::endl;
     for (const auto& c : candlesticks) {
         std::cout << std::fixed << std::setprecision(3) << 
@@ -193,7 +212,7 @@ void WeatherAnalyzerMain::printCandlestickChart()
 
     std::vector<Candlestick> candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
 
-    std::map<int, std::string, std::greater<int>> test = Statistics::getChartData(candlesticks, yearStart, yearEnd);
+    std::map<int, std::string, std::greater<int>> test = Statistics::getYearlyChartData(candlesticks, yearStart, yearEnd);
 
     for (const auto& pair : test) {
         std::cout << std::setw(4) << pair.first << "   " << pair.second << std::endl;
@@ -209,7 +228,10 @@ void WeatherAnalyzerMain::printCandlestickChart()
     for (auto it = itStart; it != itEnd; ++it) {
         xAxis += it->first + " ";
     }
-    std::cout << "\n" << xAxis << std::endl;
+    std::cout << xAxis << std::endl;
 }
+
+
+
 
 
