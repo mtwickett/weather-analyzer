@@ -48,7 +48,7 @@ void WeatherAnalyzerMain::printMenu()
         "2: Get a temperature",
         "3: Print Candlestick data",
         "4: Print Candlestick Chart",
-        "5: Print wallet",
+        "5: Print Scatter Plot",
         "6: Continue",
         "======================="
     };
@@ -64,7 +64,7 @@ std::string WeatherAnalyzerMain::processOption()
     std::string option;
     std::getline(std::cin, option);
     if (OPTIONS.find(option) != OPTIONS.end()) {
-        std::cout << "You choose option " << option << "." << std::endl;
+        std::cout << "You chose option " << option << ".\n" << std::endl;
         (this->*OPTIONS[option])();
     }
     else if (option != "e") {
@@ -76,45 +76,53 @@ std::string WeatherAnalyzerMain::processOption()
 
 void WeatherAnalyzerMain::about()
 {
-    std::cout << "Check weather temperatures in European countries" << std::endl;
+    std::cout << "---Check weather temperatures in European countries---" << std::endl;
 }
 
 
 void WeatherAnalyzerMain::getTemperature()
 {
-    std::vector<std::string> prompts = { 
-        "Enter country as: (Austria)", 
-        "Enter Year as: XXXX (1980-2019)", 
-        "Enter Month as: XX (01-12)", 
-        "Enter Day as: XX (01-31)", 
-        "Enter Hour as: XX (00-23)" };
+    // get country selection from user
+    std::string userCountry;
+    std::cout << "---Input instructions---\n" << std::endl;
+    std::cout << "Choose a country from the following selection:" << std::endl;
+    for (const auto& pair : TemperatureRow::countries) {
+        std::cout << pair.first << std::endl;
+    }
+    std::cout << "-----------------" << std::endl;
+    std::getline(std::cin, userCountry);
+    std::string country = "";
+    // convert each letter to uppercase
+    for (auto& l : userCountry) {
+        country += std::toupper(l);
+    }
+
+    std::vector<std::string> prompts = {
+        "Choose a year between 1980 and 2019:", 
+        "Choose a month between 01 and 12:", 
+        "Choose a day between 01 and 31:", 
+        "Choose an hour between 00 and 23:" 
+    };
     std::vector<std::string> userInputs;
 
-    std::cout << "---Input instructions---\n" << std::endl;
     for (auto& prompt : prompts) {
         std::string input;
         std::cout << prompt << std::endl;
         std::getline(std::cin, input);
         userInputs.push_back(input);
     }
-    
-    std::string country;
-    for (auto& u : userInputs[0]) {
-        country += std::toupper(u);
-    }
 
-
-    std::string timestamp = userInputs[1] +
+    std::string timestamp = userInputs[0] +
+        "-" +
+        userInputs[1] +
         "-" +
         userInputs[2] +
-        "-" +
-        userInputs[3] +
         "T" +
-        userInputs[4] +
+        userInputs[3] +
         ":00:00Z";
 
     std::cout << "You chose " << country << " at " << timestamp << std::endl;
-
+    
     double temp;
     try
     {
@@ -125,7 +133,7 @@ void WeatherAnalyzerMain::getTemperature()
     }
     catch (const std::exception& e)
     {
-        std::cout << "didn't work" << e.what() << std::endl;
+        std::cout << "No data" << e.what() << std::endl;
     }
 }
 
@@ -136,7 +144,11 @@ void WeatherAnalyzerMain::printCandlestickData()
     std::string filter;
 
     std::cout << "---Input instructions---\n" << std::endl;
-    std::cout << "Enter country as: (Austria)" << std::endl;
+    std::cout << "Choose a country from the following selection:" << std::endl;
+    for (const auto& pair : TemperatureRow::countries) {
+        std::cout << pair.first << std::endl;
+    }
+    std::cout << "-----------------" << std::endl;
     std::getline(std::cin, country);
     for (auto& u : country) {
         u = std::toupper(u);
@@ -166,7 +178,7 @@ void WeatherAnalyzerMain::printCandlestickData()
     }
     
 
-    std::cout << "DATE |  OPEN |  CLOSE |  HIGH  |  LOW" << std::endl;
+    std::cout << "YEAR |  OPEN |  CLOSE |  HIGH  |  LOW" << std::endl;
     std::cout << "---------------------------------------" << std::endl;
     for (const auto& c : candlesticks) {
         std::cout << std::fixed << std::setprecision(3) << 
@@ -181,10 +193,14 @@ void WeatherAnalyzerMain::printCandlestickChart()
     std::string country;
     std::string range;
     std::cout << "---Input instructions---\n" << std::endl;
-    std::cout << "Enter country as: (Austria)" << std::endl;
+    std::cout << "Choose a country from the following selection:" << std::endl;
+    for (const auto& pair : TemperatureRow::countries) {
+        std::cout << pair.first << std::endl;
+    }
+    std::cout << "-----------------" << std::endl;
     std::getline(std::cin, country);
 
-    std::cout << "Enter a year range (max 20) as: 1980-1999" << std::endl;
+    std::cout << "Choose a year range .eg. 1980-2019 or 1985-1990" << std::endl;
     std::getline(std::cin, range);
 
     for (auto& u : country) {
@@ -206,15 +222,15 @@ void WeatherAnalyzerMain::printCandlestickChart()
         std::cerr << "One or both years not found in the map." << std::endl;
     }
 
-    std::cout << "You chose: " << country << std::endl;
+    std::cout << "You chose: " << country << "\n" << std::endl;
     unsigned int countryIndex = TemperatureRow::countries.at(country);
     std::map<std::string, std::vector<double>> yearToTempsMap = SearchData::getTempsByYear(rows, countryIndex);
 
     std::vector<Candlestick> candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
 
-    std::map<int, std::string, std::greater<int>> test = Statistics::getYearlyChartData(candlesticks, yearStart, yearEnd);
+    std::map<int, std::string, std::greater<int>> chart = Statistics::getYearlyChartData(candlesticks, yearStart, yearEnd);
 
-    for (const auto& pair : test) {
+    for (const auto& pair : chart) {
         std::cout << std::setw(4) << pair.first << "   " << pair.second << std::endl;
     }
 
@@ -223,12 +239,12 @@ void WeatherAnalyzerMain::printCandlestickChart()
     if (itEnd != Candlestick::years.end()) {
         ++itEnd;
     }
-    std::string xAxis = "         ";
+    std::string xAxis = "        ";
 
     for (auto it = itStart; it != itEnd; ++it) {
-        xAxis += it->first + " ";
+        xAxis += it->first.substr(2, 2) + " ";
     }
-    std::cout << xAxis << std::endl;
+    std::cout << "\n" << xAxis << std::endl;
 }
 
 

@@ -113,9 +113,9 @@ std::map<int, std::string, std::greater<int>> Statistics::getYearlyChartData(
 		for (auto& pair : chart) {
 			if (pair.first >= low && pair.first <= high) {
 				if (pair.first >= std::min(open, close) && pair.first <= std::max(open, close))
-					chart[pair.first] += "   ==";
+					chart[pair.first] += " ==";
 				else 
-					chart[pair.first] += "   ||";
+					chart[pair.first] += " ||";
 			}
 		}
 		
