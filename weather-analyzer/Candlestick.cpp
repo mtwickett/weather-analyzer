@@ -9,7 +9,7 @@ Candlestick::Candlestick(std::string _year, double _open, double _close, double 
 }
 
 
-const std::map<std::string, unsigned int> Candlestick::years = {
+const std::map<std::string, int> Candlestick::years = {
     {"1980", 0},
     {"1981", 1},
     {"1982", 2},

@@ -34,15 +34,17 @@ std::map<int, std::string, std::greater<int>> Statistics::calculateYAxisScale(co
 {
 	// calculate y-axis scale
 	std::map<int, std::string, std::greater<int>> yAxis;
-	double yAxisMax = 0.0;
-	double yAxisMin = 0.0;
-	for (const auto& c : candlesticks) {
-		if (c.high > yAxisMax)
-			yAxisMax = c.high;
-		if (c.low < yAxisMin)
-			yAxisMin = c.low;
-	}
+	double yAxisMax = std::numeric_limits<double>::min();
+	double yAxisMin = std::numeric_limits<double>::max();
 
+	for (const auto& c : candlesticks) {
+		double highest = std::max({ c.open, c.close, c.high });
+		double lowest = std::min({ c.open, c.close, c.low });
+		if (highest > yAxisMax)
+			yAxisMax = highest;
+		if (lowest < yAxisMin)
+			yAxisMin = lowest;
+	}
 	int yAxisMaxRound = static_cast<int>(std::round(yAxisMax));
 	int yAxisMinRound = static_cast<int>(std::round(yAxisMin));
 
@@ -96,26 +98,23 @@ std::vector<Candlestick> Statistics::calculateCandlesticks(const std::map<std::s
 
 std::map<int, std::string, std::greater<int>> Statistics::getYearlyChartData(
 	const std::vector<Candlestick>& candlesticks,
-	const unsigned int& yearStart,
-	const unsigned int& yearEnd)
+	const int& yearStart,
+	const int& yearRange)
 {
+	std::vector<Candlestick> yearsSub(candlesticks.begin() + yearStart, candlesticks.begin() + yearStart + yearRange);
 
-	std::map<int, std::string, std::greater<int>> chart = calculateYAxisScale(candlesticks);
-
-	std::vector<Candlestick> yearsSub(candlesticks.begin() + yearStart, candlesticks.begin() + yearEnd);
+	std::map<int, std::string, std::greater<int>> chart = calculateYAxisScale(yearsSub);
 	for (const auto& c : yearsSub) {
 		int open = static_cast<int>(std::round(c.open));
 		int close = static_cast<int>(std::round(c.close));
 		int high = static_cast<int>(std::round(c.high));
 		int low = static_cast<int>(std::round(c.low));
 
-
 		for (auto& pair : chart) {
-			if (pair.first >= low && pair.first <= high) {
-				if (pair.first >= std::min(open, close) && pair.first <= std::max(open, close))
-					chart[pair.first] += " ==";
-				else 
-					chart[pair.first] += " ||";
+			if (pair.first >= std::min(open, close) && pair.first <= std::max(open, close))
+				chart[pair.first] += " ==";
+			else if (pair.first >= low && pair.first <= high) {
+				chart[pair.first] += " ||";
 			}
 		}
 		

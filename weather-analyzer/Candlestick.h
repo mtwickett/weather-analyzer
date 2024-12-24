@@ -16,7 +16,7 @@ public:
 	double high;
 	double low;
 
-	static const std::map<std::string, unsigned int> years;
+	static const std::map<std::string, int> years;
 
 };
 

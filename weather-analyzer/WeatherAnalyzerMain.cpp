@@ -157,7 +157,7 @@ void WeatherAnalyzerMain::printCandlestickData()
     std::cout << "You chose: " << country << std::endl;
     unsigned int countryIndex = TemperatureRow::countries.at(country);
 
-    // choose by day
+    // choose by day or year
     std::cout << "Choose filter by year or filter by day" << std::endl;
     std::cout << "For filter by year: Press 1" << std::endl;
     std::cout << "For filter by day: Press 2" << std::endl;
@@ -192,6 +192,7 @@ void WeatherAnalyzerMain::printCandlestickChart()
 {
     std::string country;
     std::string range;
+    std::string filter;
     std::cout << "---Input instructions---\n" << std::endl;
     std::cout << "Choose a country from the following selection:" << std::endl;
     for (const auto& pair : TemperatureRow::countries) {
@@ -200,36 +201,64 @@ void WeatherAnalyzerMain::printCandlestickChart()
     std::cout << "-----------------" << std::endl;
     std::getline(std::cin, country);
 
-    std::cout << "Choose a year range .eg. 1980-2019 or 1985-1990" << std::endl;
-    std::getline(std::cin, range);
-
     for (auto& u : country) {
         u = std::toupper(u);
     }
 
+    std::cout << "Choose a year range .eg. 1980-2019 or 1985-1990" << std::endl;
+    std::getline(std::cin, range);
+
+
     std::string yearStartKey = range.substr(0, 4);
-    std::string yearEndKey = range.substr(5);
-    unsigned int yearStart = 0;
-    unsigned int yearEnd = 0;
+    std::string yearEndKey = range.substr(5, 4);
+    int yearStart;
+    int yearEnd;
+    int yearRange;
 
     if (Candlestick::years.find(yearStartKey) != Candlestick::years.end() &&
         Candlestick::years.find(yearEndKey) != Candlestick::years.end()) {
         yearStart = Candlestick::years.at(yearStartKey);
-        yearEnd = Candlestick::years.at(yearEndKey) + 1;
-
+        yearEnd = Candlestick::years.at(yearEndKey);
+        yearRange = yearEnd - yearStart + 1;
     }
     else {
         std::cerr << "One or both years not found in the map." << std::endl;
     }
-
+    
     std::cout << "You chose: " << country << "\n" << std::endl;
     unsigned int countryIndex = TemperatureRow::countries.at(country);
-    std::map<std::string, std::vector<double>> yearToTempsMap = SearchData::getTempsByYear(rows, countryIndex);
+    // choose by day or year
+    std::cout << "Choose filter by year or filter by day" << std::endl;
+    std::cout << "For filter by year: Press 1" << std::endl;
+    std::cout << "For filter by day: Press 2" << std::endl;
+    std::getline(std::cin, filter);
 
-    std::vector<Candlestick> candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
+    std::map<std::string, std::vector<double>> dateToTempsMap;
+    std::vector<Candlestick> candlesticks;
+    std::map<int, std::string, std::greater<int>> chart;
+    if (filter == "1") {
+        dateToTempsMap = SearchData::getTempsByYear(rows, countryIndex);
+        candlesticks = Statistics::calculateCandlesticks(dateToTempsMap);
+        chart = Statistics::getYearlyChartData(candlesticks, yearStart, yearRange);
+    }
+    else if (filter == "2") {
+        std::string day;
+        std::cout << "Enter a month and day as: 01-01" << std::endl;
+        std::getline(std::cin, day);
+        dateToTempsMap = SearchData::getTempsByDayOfYear(rows, countryIndex, day);
+        candlesticks = Statistics::calculateCandlesticks(dateToTempsMap);
+        try
+        {
+            chart = Statistics::getYearlyChartData(candlesticks, yearStart, yearRange);
+        }
+        catch (const std::exception& e)
+        {
+            std::cout << e.what() << std::endl;
+        }
 
-    std::map<int, std::string, std::greater<int>> chart = Statistics::getYearlyChartData(candlesticks, yearStart, yearEnd);
+    }
 
+    std::cout << "\n" << std::endl;
     for (const auto& pair : chart) {
         std::cout << std::setw(4) << pair.first << "   " << pair.second << std::endl;
     }
