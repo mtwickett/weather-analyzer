@@ -14,7 +14,6 @@ class WeatherAnalyzerMain
 {
 public:
     WeatherAnalyzerMain();
-
     void init();
 
 private:
@@ -22,6 +21,7 @@ private:
     void getTemperature();
     void printCandlestickData();
     void printCandlestickChart();
+    void printLineGraph();
     void printMenu();
     std::string processOption();
 

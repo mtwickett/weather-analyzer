@@ -12,7 +12,8 @@ WeatherAnalyzerMain::WeatherAnalyzerMain()
         {"1", &WeatherAnalyzerMain::about},
         {"2", &WeatherAnalyzerMain::getTemperature},
         {"3", &WeatherAnalyzerMain::printCandlestickData},
-        {"4", &WeatherAnalyzerMain::printCandlestickChart}
+        {"4", &WeatherAnalyzerMain::printCandlestickChart},
+        {"5", &WeatherAnalyzerMain::printLineGraph}
     };
 }
 
@@ -45,11 +46,10 @@ void WeatherAnalyzerMain::printMenu()
         "Please enter an option 1-6 or press e to exit",
         "=======================",
         "1: About",
-        "2: Get a temperature",
-        "3: Print Candlestick data",
+        "2: Get a Temperature",
+        "3: Print Candlestick Data",
         "4: Print Candlestick Chart",
-        "5: Print Scatter Plot",
-        "6: Continue",
+        "5: Print Line Graph",
         "======================="
     };
 
@@ -163,18 +163,18 @@ void WeatherAnalyzerMain::printCandlestickData()
     std::cout << "For filter by day: Press 2" << std::endl;
     std::getline(std::cin, filter);
 
-    std::map<std::string, std::vector<double>> dateToTempsMap;
+    std::map<std::string, std::vector<double>> yearToTempsMap;
     std::vector<Candlestick> candlesticks;
     if (filter == "1") {
-        dateToTempsMap = SearchData::getTempsByYear(rows, countryIndex);
-        candlesticks = Statistics::calculateCandlesticks(dateToTempsMap);
+        yearToTempsMap = SearchData::getTempsByYear(rows, countryIndex);
+        candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
     }
     else if (filter == "2") {
         std::string day;
         std::cout << "Enter a month and day as: 01-01" << std::endl;
         std::getline(std::cin, day);
-        dateToTempsMap = SearchData::getTempsByDayOfYear(rows, countryIndex, day);
-        candlesticks = Statistics::calculateCandlesticks(dateToTempsMap);
+        yearToTempsMap = SearchData::getTempsByDayOfYear(rows, countryIndex, day);
+        candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
     }
     
 
@@ -233,20 +233,20 @@ void WeatherAnalyzerMain::printCandlestickChart()
     std::cout << "For filter by day: Press 2" << std::endl;
     std::getline(std::cin, filter);
 
-    std::map<std::string, std::vector<double>> dateToTempsMap;
+    std::map<std::string, std::vector<double>> yearToTempsMap;
     std::vector<Candlestick> candlesticks;
     std::map<int, std::string, std::greater<int>> chart;
     if (filter == "1") {
-        dateToTempsMap = SearchData::getTempsByYear(rows, countryIndex);
-        candlesticks = Statistics::calculateCandlesticks(dateToTempsMap);
+        yearToTempsMap = SearchData::getTempsByYear(rows, countryIndex);
+        candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
         chart = Statistics::getYearlyChartData(candlesticks, yearStart, yearRange);
     }
     else if (filter == "2") {
         std::string day;
         std::cout << "Enter a month and day as: 01-01" << std::endl;
         std::getline(std::cin, day);
-        dateToTempsMap = SearchData::getTempsByDayOfYear(rows, countryIndex, day);
-        candlesticks = Statistics::calculateCandlesticks(dateToTempsMap);
+        yearToTempsMap = SearchData::getTempsByDayOfYear(rows, countryIndex, day);
+        candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
         try
         {
             chart = Statistics::getYearlyChartData(candlesticks, yearStart, yearRange);
@@ -274,6 +274,41 @@ void WeatherAnalyzerMain::printCandlestickChart()
         xAxis += it->first.substr(2, 2) + " ";
     }
     std::cout << "\n" << xAxis << std::endl;
+}
+
+
+void WeatherAnalyzerMain::printLineGraph()
+{
+    std::map<std::string, std::vector<double>> yearToTempsMap;
+    std::vector<Candlestick> candlesticks;
+    std::map<int, std::string, std::greater<int>> chart;
+
+    // prompt user for a country  
+    std::string country;
+    std::cout << "---Input instructions---\n" << std::endl;
+    std::cout << "Choose a country from the following selection:" << std::endl;
+    for (const auto& pair : TemperatureRow::countries) {
+        std::cout << pair.second << ": " << pair.first << std::endl;
+    }
+    std::cout << "-----------------" << std::endl;
+    std::getline(std::cin, country);
+
+    for (auto& u : country) {
+        u = std::toupper(u);
+    }
+
+    std::cout << "You chose: " << country << "\n" << std::endl;
+    unsigned int countryIndex = TemperatureRow::countries.at(country);
+
+    std::string day;
+    std::cout << "Enter a month and day as: 01-01" << std::endl;
+    std::getline(std::cin, day);
+    
+    yearToTempsMap = SearchData::getTempsByDayOfYear(rows, countryIndex, day);
+    for (const auto& pair : yearToTempsMap) {
+        std::cout << pair.first << ": " << pair.second[0] << pair.second[1] << std::endl;
+    }
+
 }
 
 
