@@ -12,8 +12,9 @@ WeatherAnalyzerMain::WeatherAnalyzerMain()
         {"1", &WeatherAnalyzerMain::about},
         {"2", &WeatherAnalyzerMain::getTemperature},
         {"3", &WeatherAnalyzerMain::printCandlestickData},
-        {"4", &WeatherAnalyzerMain::printCandlestickChart},
-        {"5", &WeatherAnalyzerMain::printLineGraph}
+        {"4", &WeatherAnalyzerMain::plotCandlestickChart},
+        {"5", &WeatherAnalyzerMain::printLineGraphData},
+        {"6", &WeatherAnalyzerMain::plotLineGraph}
     };
 }
 
@@ -29,12 +30,11 @@ void WeatherAnalyzerMain::init()
         std::cout << "Exception caught: " << e.what() << std::endl;
     }
 
-    std::string option;
     do {
         printMenu();
-        option = processOption();
+        WeatherAnalyzerMain::option = processOption();
 
-    } while (option != "e");
+    } while (WeatherAnalyzerMain::option != "e");
     std::cout << "Exiting options" << std::endl;
 }
 
@@ -48,8 +48,9 @@ void WeatherAnalyzerMain::printMenu()
         "1: About",
         "2: Get a Temperature",
         "3: Print Candlestick Data",
-        "4: Print Candlestick Chart",
+        "4: Plot Candlestick Chart",
         "5: Print Line Graph",
+        "6: Plot Line Graph",
         "======================="
     };
 
@@ -82,51 +83,19 @@ void WeatherAnalyzerMain::about()
 
 void WeatherAnalyzerMain::getTemperature()
 {
-    // get country selection from user
-    std::string userCountry;
-    std::cout << "---Input instructions---\n" << std::endl;
-    std::cout << "Choose a country from the following selection:" << std::endl;
-    for (const auto& pair : TemperatureRow::countries) {
-        std::cout << pair.first << std::endl;
-    }
-    std::cout << "-----------------" << std::endl;
-    std::getline(std::cin, userCountry);
-    std::string country = "";
-    // convert each letter to uppercase
-    for (auto& l : userCountry) {
-        country += std::toupper(l);
-    }
+    std::string country = getUserCountry();
+    std::string year = getUserYear();
+    std::string month = getUserMonth();
+    std::string day = getUserDay();
+    std::string hour = getUserHour();
 
-    std::vector<std::string> prompts = {
-        "Choose a year between 1980 and 2019:", 
-        "Choose a month between 01 and 12:", 
-        "Choose a day between 01 and 31:", 
-        "Choose an hour between 00 and 23:" 
-    };
-    std::vector<std::string> userInputs;
-
-    for (auto& prompt : prompts) {
-        std::string input;
-        std::cout << prompt << std::endl;
-        std::getline(std::cin, input);
-        userInputs.push_back(input);
-    }
-
-    std::string timestamp = userInputs[0] +
-        "-" +
-        userInputs[1] +
-        "-" +
-        userInputs[2] +
-        "T" +
-        userInputs[3] +
-        ":00:00Z";
-
+    std::string timestamp = year + "-" + month + "-" + day + "T" + hour + ":00:00Z";
     std::cout << "You chose " << country << " at " << timestamp << std::endl;
-    
-    double temp;
+  
     try
     {
-        int rowIndex = SearchData::getRowIndex(rows, timestamp);
+        double temp;
+        int rowIndex = TemperatureRow::getRowIndex(rows, timestamp);
         unsigned int tempIndex = TemperatureRow::countries.at(country);
         temp = rows[rowIndex].temperatures[tempIndex];
         std::cout << "Temperature Degrees Celcius: " << temp << std::endl;
@@ -137,46 +106,34 @@ void WeatherAnalyzerMain::getTemperature()
     }
 }
 
-
-void WeatherAnalyzerMain::printCandlestickData()
+// get only the data
+std::vector<Candlestick> WeatherAnalyzerMain::getCandlestickData()
 {
-    std::string country;
-    std::string filter;
-
-    std::cout << "---Input instructions---\n" << std::endl;
-    std::cout << "Choose a country from the following selection:" << std::endl;
-    for (const auto& pair : TemperatureRow::countries) {
-        std::cout << pair.first << std::endl;
-    }
-    std::cout << "-----------------" << std::endl;
-    std::getline(std::cin, country);
-    for (auto& u : country) {
-        u = std::toupper(u);
-    }
-
-    std::cout << "You chose: " << country << std::endl;
+    std::string country = getUserCountry();
     unsigned int countryIndex = TemperatureRow::countries.at(country);
-
-    // choose by day or year
-    std::cout << "Choose filter by year or filter by day" << std::endl;
-    std::cout << "For filter by year: Press 1" << std::endl;
-    std::cout << "For filter by day: Press 2" << std::endl;
-    std::getline(std::cin, filter);
+    std::string period = getUserPeriodFilter();
 
     std::map<std::string, std::vector<double>> yearToTempsMap;
     std::vector<Candlestick> candlesticks;
-    if (filter == "1") {
-        yearToTempsMap = SearchData::getTempsByYear(rows, countryIndex);
+
+    if (period == "1") {
+        yearToTempsMap = TemperatureRow::getTempsByYear(rows, countryIndex);
         candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
     }
-    else if (filter == "2") {
-        std::string day;
-        std::cout << "Enter a month and day as: 01-01" << std::endl;
-        std::getline(std::cin, day);
-        yearToTempsMap = SearchData::getTempsByDayOfYear(rows, countryIndex, day);
+    else {
+        std::string month = getUserMonth();
+        std::string day = getUserDay();
+        std::string monthDay = month + "-" + day;
+        yearToTempsMap = TemperatureRow::getTempsByDayOfYear(rows, countryIndex, monthDay);
         candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
     }
-    
+    return candlesticks;
+}
+
+
+void WeatherAnalyzerMain::printCandlestickData()
+{
+    std::vector<Candlestick> candlesticks = getCandlestickData();
 
     std::cout << "YEAR |  OPEN |  CLOSE |  HIGH  |  LOW" << std::endl;
     std::cout << "---------------------------------------" << std::endl;
@@ -188,13 +145,13 @@ void WeatherAnalyzerMain::printCandlestickData()
 }
 
 
-void WeatherAnalyzerMain::printCandlestickChart()
+void WeatherAnalyzerMain::plotCandlestickChart()
 {
     std::string country;
     std::string range;
     std::string filter;
     std::cout << "---Input instructions---\n" << std::endl;
-    std::cout << "Choose a country from the following selection:" << std::endl;
+    std::cout << "Choose a country from the following list:" << std::endl;
     for (const auto& pair : TemperatureRow::countries) {
         std::cout << pair.first << std::endl;
     }
@@ -215,10 +172,10 @@ void WeatherAnalyzerMain::printCandlestickChart()
     int yearEnd;
     int yearRange;
 
-    if (Candlestick::years.find(yearStartKey) != Candlestick::years.end() &&
-        Candlestick::years.find(yearEndKey) != Candlestick::years.end()) {
-        yearStart = Candlestick::years.at(yearStartKey);
-        yearEnd = Candlestick::years.at(yearEndKey);
+    if (TemperatureRow::years.find(yearStartKey) != TemperatureRow::years.end() &&
+        TemperatureRow::years.find(yearEndKey) != TemperatureRow::years.end()) {
+        yearStart = TemperatureRow::years.at(yearStartKey);
+        yearEnd = TemperatureRow::years.at(yearEndKey);
         yearRange = yearEnd - yearStart + 1;
     }
     else {
@@ -237,7 +194,7 @@ void WeatherAnalyzerMain::printCandlestickChart()
     std::vector<Candlestick> candlesticks;
     std::map<int, std::string, std::greater<int>> chart;
     if (filter == "1") {
-        yearToTempsMap = SearchData::getTempsByYear(rows, countryIndex);
+        yearToTempsMap = TemperatureRow::getTempsByYear(rows, countryIndex);
         candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
         chart = Statistics::getYearlyChartData(candlesticks, yearStart, yearRange);
     }
@@ -245,7 +202,7 @@ void WeatherAnalyzerMain::printCandlestickChart()
         std::string day;
         std::cout << "Enter a month and day as: 01-01" << std::endl;
         std::getline(std::cin, day);
-        yearToTempsMap = SearchData::getTempsByDayOfYear(rows, countryIndex, day);
+        yearToTempsMap = TemperatureRow::getTempsByDayOfYear(rows, countryIndex, day);
         candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
         try
         {
@@ -263,9 +220,9 @@ void WeatherAnalyzerMain::printCandlestickChart()
         std::cout << std::setw(4) << pair.first << "   " << pair.second << std::endl;
     }
 
-    auto itStart = Candlestick::years.find(yearStartKey);
-    auto itEnd = Candlestick::years.find(yearEndKey);
-    if (itEnd != Candlestick::years.end()) {
+    auto itStart = TemperatureRow::years.find(yearStartKey);
+    auto itEnd = TemperatureRow::years.find(yearEndKey);
+    if (itEnd != TemperatureRow::years.end()) {
         ++itEnd;
     }
     std::string xAxis = "        ";
@@ -277,41 +234,108 @@ void WeatherAnalyzerMain::printCandlestickChart()
 }
 
 
-void WeatherAnalyzerMain::printLineGraph()
+void WeatherAnalyzerMain::printLineGraphData()
 {
     std::map<std::string, std::vector<double>> yearToTempsMap;
-    std::vector<Candlestick> candlesticks;
+    std::vector<LineGraph> lineGraph;
     std::map<int, std::string, std::greater<int>> chart;
 
     // prompt user for a country  
-    std::string country;
-    std::cout << "---Input instructions---\n" << std::endl;
-    std::cout << "Choose a country from the following selection:" << std::endl;
-    for (const auto& pair : TemperatureRow::countries) {
-        std::cout << pair.second << ": " << pair.first << std::endl;
-    }
-    std::cout << "-----------------" << std::endl;
-    std::getline(std::cin, country);
-
-    for (auto& u : country) {
-        u = std::toupper(u);
-    }
-
-    std::cout << "You chose: " << country << "\n" << std::endl;
+    std::string country = getUserCountry();
     unsigned int countryIndex = TemperatureRow::countries.at(country);
 
     std::string day;
     std::cout << "Enter a month and day as: 01-01" << std::endl;
     std::getline(std::cin, day);
     
-    yearToTempsMap = SearchData::getTempsByDayOfYear(rows, countryIndex, day);
-    for (const auto& pair : yearToTempsMap) {
-        std::cout << pair.first << ": " << pair.second[0] << pair.second[1] << std::endl;
-    }
+    yearToTempsMap = TemperatureRow::getTempsByDayOfYear(rows, countryIndex, day);
+
+
+    
 
 }
 
 
+void WeatherAnalyzerMain::plotLineGraph()
+{
+
+}
 
 
+std::string WeatherAnalyzerMain::getUserCountry()
+{
+    std::string country;
+    std::cout << "---Input instructions---\n" << std::endl;
+    std::cout << "Choose a country from the following selection:" << std::endl;
+    for (const auto& pair : TemperatureRow::countries) {
+        std::cout << pair.first << std::endl;
+    }
+    std::cout << "-----------------" << std::endl;
+    std::getline(std::cin, country);
+    for (auto& u : country) {
+        u = std::toupper(u);
+    }
 
+    std::cout << "You chose: " << country << std::endl;
+    return country;
+}
+
+
+std::string WeatherAnalyzerMain::getUserPeriodFilter()
+{
+    std::string period;
+
+    std::cout << "---Input instructions---" << std::endl;
+    std::cout << "Choose period of data to be Year or Day" << std::endl;
+    std::cout << "Please enter an option 1-2" << std::endl;
+    std::cout << "=======================" << std::endl;
+    std::cout << "1: Year" << std::endl;
+    std::cout << "2: Day" << std::endl;
+
+    std::getline(std::cin, period);
+    return period;
+}
+
+
+std::string WeatherAnalyzerMain::getUserYear()
+{
+    std::string year;
+
+    std::cout << "Enter a year between 1980 and 2019:" << std::endl;
+    
+    std::getline(std::cin, year);
+    return year;
+}
+
+
+std::string WeatherAnalyzerMain::getUserMonth()
+{
+    std::string month;
+
+    std::cout << "Enter a month between 01 and 12:" << std::endl;
+
+    std::getline(std::cin, month);
+    return month;
+}
+
+
+std::string WeatherAnalyzerMain::getUserDay()
+{
+    std::string day;
+
+    std::cout << "Enter a day between 01 and 31:" << std::endl;
+
+    std::getline(std::cin, day);
+    return day;
+}
+
+
+std::string WeatherAnalyzerMain::getUserHour()
+{
+    std::string hour;
+
+    std::cout << "Enter an hour between 00 and 23:" << std::endl;
+
+    std::getline(std::cin, hour);
+    return hour;
+}

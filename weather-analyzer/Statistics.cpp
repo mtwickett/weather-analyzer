@@ -1,4 +1,5 @@
 #include "Statistics.h"
+#include "LineGraph.h"
 
 #include <numeric>
 #include <algorithm>
@@ -30,7 +31,7 @@ std::vector<double> Statistics::getMeanHighLow(const std::vector<double>& temps)
 }
 
 
-std::map<int, std::string, std::greater<int>> Statistics::calculateYAxisScale(const std::vector<Candlestick>& candlesticks)
+std::map<int, std::string, std::greater<int>> Statistics::calculateYAxis(const std::vector<Candlestick>& candlesticks)
 {
 	// calculate y-axis scale
 	std::map<int, std::string, std::greater<int>> yAxis;
@@ -103,7 +104,7 @@ std::map<int, std::string, std::greater<int>> Statistics::getYearlyChartData(
 {
 	std::vector<Candlestick> yearsSub(candlesticks.begin() + yearStart, candlesticks.begin() + yearStart + yearRange);
 
-	std::map<int, std::string, std::greater<int>> chart = calculateYAxisScale(yearsSub);
+	std::map<int, std::string, std::greater<int>> chart = calculateYAxis(yearsSub);
 	for (const auto& c : yearsSub) {
 		int open = static_cast<int>(std::round(c.open));
 		int close = static_cast<int>(std::round(c.close));
@@ -120,4 +121,12 @@ std::map<int, std::string, std::greater<int>> Statistics::getYearlyChartData(
 		
 	}
 	return chart;
+}
+
+
+std::vector<LineGraph> Statistics::calculateLineGraph(const std::map<std::string,
+	std::vector<double>>&yearToTempsMap)
+{
+	std::vector<LineGraph> linegraph;
+	return linegraph;
 }

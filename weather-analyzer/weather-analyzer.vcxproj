@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -131,8 +131,8 @@
   <ItemGroup>
     <ClCompile Include="Candlestick.cpp" />
     <ClCompile Include="CsvReader.cpp" />
+    <ClCompile Include="LineGraph.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="SearchData.cpp" />
     <ClCompile Include="Statistics.cpp" />
     <ClCompile Include="TemperatureRow.cpp" />
     <ClCompile Include="WeatherAnalyzerMain.cpp" />
@@ -140,7 +140,7 @@
   <ItemGroup>
     <ClInclude Include="Candlestick.h" />
     <ClInclude Include="CsvReader.h" />
-    <ClInclude Include="SearchData.h" />
+    <ClInclude Include="LineGraph.h" />
     <ClInclude Include="Statistics.h" />
     <ClInclude Include="TemperatureRow.h" />
     <ClInclude Include="WeatherAnalyzerMain.h" />

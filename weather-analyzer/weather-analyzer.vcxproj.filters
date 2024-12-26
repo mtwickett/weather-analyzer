@@ -30,10 +30,10 @@
     <ClCompile Include="Candlestick.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SearchData.cpp">
+    <ClCompile Include="Statistics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Statistics.cpp">
+    <ClCompile Include="LineGraph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,10 +50,10 @@
     <ClInclude Include="Candlestick.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SearchData.h">
+    <ClInclude Include="Statistics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Statistics.h">
+    <ClInclude Include="LineGraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

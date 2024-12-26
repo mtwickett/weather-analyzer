@@ -6,7 +6,7 @@
 
 #include "TemperatureRow.h"
 #include "csvReader.h"
-#include "SearchData.h"
+#include "Candlestick.h"
 
     
 
@@ -20,12 +20,23 @@ private:
     void about();
     void getTemperature();
     void printCandlestickData();
-    void printCandlestickChart();
-    void printLineGraph();
+    void plotCandlestickChart();
+    void printLineGraphData();
+    void plotLineGraph();
     void printMenu();
+
     std::string processOption();
+
+    std::vector<Candlestick> getCandlestickData();
+    std::string getUserCountry();
+    std::string getUserPeriodFilter();
+    std::string getUserYear();
+    std::string getUserMonth();
+    std::string getUserDay();
+    std::string getUserHour();
 
     std::map<std::string, void(WeatherAnalyzerMain::*)()> OPTIONS;
     std::vector<TemperatureRow> rows;
+    std::string option;
 };
 

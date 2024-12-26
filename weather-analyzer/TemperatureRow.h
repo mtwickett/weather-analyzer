@@ -22,10 +22,22 @@ public:
 
     void printRow();
 
+    static const int getRowIndex(const std::vector<TemperatureRow>& rows,
+        const std::string& timestamp);
+    static const std::vector<TemperatureRow> getRowsByYear(const std::vector<TemperatureRow>& rows,
+        const std::string& year);
+    static const std::vector<TemperatureRow> getRowsByMonth(const std::vector<TemperatureRow>& rows,
+        const std::string& month);
+    static std::map <std::string, std::vector<double>> getTempsByYear(const std::vector<TemperatureRow>& rows,
+        unsigned int countryIndex);
+    static std::map <std::string, std::vector<double>> getTempsByDayOfYear(const std::vector<TemperatureRow>& rows,
+        unsigned int countryIndex, std::string monthDay);
+    
+
     std::string timestamp;
     std::vector<double> temperatures;
 
-
+    static const std::map<std::string, int> years;
     static const std::map<std::string, unsigned int> countries;
 };
 
