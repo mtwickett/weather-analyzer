@@ -101,7 +101,6 @@ std::map<int, std::string, std::greater<int>> Statistics::getCandlestickChart(
 	const std::vector<Candlestick>& candlesticks)
 {
 	/*std::vector<Candlestick> yearsSub(candlesticks.begin() + yearStart, candlesticks.begin() + yearStart + yearRange);*/
-	std::vector<int> test;
 	std::map<int, std::string, std::greater<int>> chart = calculateYAxis(candlesticks);
 	for (const auto& c : candlesticks) {
 		int open = static_cast<int>(std::round(c.open));

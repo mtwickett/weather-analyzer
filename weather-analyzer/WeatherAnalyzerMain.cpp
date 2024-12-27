@@ -163,13 +163,14 @@ void WeatherAnalyzerMain::plotCandlestickChart(std::vector<Candlestick> candlest
     std::map<int, std::string, std::greater<int>> chart = Statistics::getCandlestickChart(candlesticks);
     
     std::cout << "\n" << std::endl;
+
     for (const auto& pair : chart) {
-        std::cout << std::setw(4)
-            << pair.first
-            << "   "
+        std::cout << "[" << std::setw(4)
+            << pair.first << "]"
+            << "[" << "   " << "]" << "\\n"
             << pair.second
             << std::endl;
-
+        break;
     }
     std::string xAxis = "        ";
     for (const auto& pair : TemperatureRow::years) {
