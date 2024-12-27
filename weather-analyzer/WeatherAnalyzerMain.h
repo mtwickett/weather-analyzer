@@ -20,6 +20,7 @@ private:
     void about();
     void getTemperature();
     void printCandlestickData();
+    void plotCandlestickChart(std::vector<Candlestick> candlesticks);
     void plotCandlestickChart();
     void printLineGraphData();
     void plotLineGraph();

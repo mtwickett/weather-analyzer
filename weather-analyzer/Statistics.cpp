@@ -97,28 +97,31 @@ std::vector<Candlestick> Statistics::calculateCandlesticks(const std::map<std::s
 }
 
 
-std::map<int, std::string, std::greater<int>> Statistics::getYearlyChartData(
-	const std::vector<Candlestick>& candlesticks,
-	const int& yearStart,
-	const int& yearRange)
+std::map<int, std::string, std::greater<int>> Statistics::getCandlestickChart(
+	const std::vector<Candlestick>& candlesticks)
 {
-	std::vector<Candlestick> yearsSub(candlesticks.begin() + yearStart, candlesticks.begin() + yearStart + yearRange);
-
-	std::map<int, std::string, std::greater<int>> chart = calculateYAxis(yearsSub);
-	for (const auto& c : yearsSub) {
+	/*std::vector<Candlestick> yearsSub(candlesticks.begin() + yearStart, candlesticks.begin() + yearStart + yearRange);*/
+	std::vector<int> test;
+	std::map<int, std::string, std::greater<int>> chart = calculateYAxis(candlesticks);
+	for (const auto& c : candlesticks) {
 		int open = static_cast<int>(std::round(c.open));
 		int close = static_cast<int>(std::round(c.close));
 		int high = static_cast<int>(std::round(c.high));
 		int low = static_cast<int>(std::round(c.low));
-
+		std::cout << c.year << ": " << open << ": " << close << ": " << high << ": " << low <<std::endl;
+		
+		
 		for (auto& pair : chart) {
-			if (pair.first >= std::min(open, close) && pair.first <= std::max(open, close))
+			if (pair.first >= std::min(open, close) && pair.first <= std::max(open, close)) {
 				chart[pair.first] += " ==";
+			}
 			else if (pair.first >= low && pair.first <= high) {
 				chart[pair.first] += " ||";
 			}
+			else {
+				chart[pair.first] += "   ";
+			}
 		}
-		
 	}
 	return chart;
 }

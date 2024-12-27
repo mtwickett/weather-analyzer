@@ -4,6 +4,7 @@
 
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 
 
 WeatherAnalyzerMain::WeatherAnalyzerMain()
@@ -142,6 +143,39 @@ void WeatherAnalyzerMain::printCandlestickData()
             c.year << " | " << c.open << " | " << c.close <<
             " | " << c.high << " | " <<c.low << std::endl;
     }
+
+    // ask user if they want to plot the candlesticks
+    std::string plotCandlesticks;
+    std::cout << "\nWould you like to plot the candlesticks?" << std::endl;
+    std::cout << "=======================" << std::endl;
+    std::cout << "1: Yes" << std::endl;
+    std::cout << "2: No" << std::endl;
+    std::cout << "=======================" << std::endl;
+
+    std::getline(std::cin, plotCandlesticks);
+    if (plotCandlesticks == "1")
+        plotCandlestickChart(candlesticks);
+}
+
+
+void WeatherAnalyzerMain::plotCandlestickChart(std::vector<Candlestick> candlesticks)
+{
+    std::map<int, std::string, std::greater<int>> chart = Statistics::getCandlestickChart(candlesticks);
+    
+    std::cout << "\n" << std::endl;
+    for (const auto& pair : chart) {
+        std::cout << std::setw(4)
+            << pair.first
+            << "   "
+            << pair.second
+            << std::endl;
+
+    }
+    std::string xAxis = "        ";
+    for (const auto& pair : TemperatureRow::years) {
+        xAxis += pair.first.substr(2, 2) + " ";
+    }
+    std::cout << "\n" << xAxis << std::endl;
 }
 
 
@@ -196,7 +230,7 @@ void WeatherAnalyzerMain::plotCandlestickChart()
     if (filter == "1") {
         yearToTempsMap = TemperatureRow::getTempsByYear(rows, countryIndex);
         candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
-        chart = Statistics::getYearlyChartData(candlesticks, yearStart, yearRange);
+        chart = Statistics::getCandlestickChart(candlesticks);
     }
     else if (filter == "2") {
         std::string day;
@@ -206,7 +240,7 @@ void WeatherAnalyzerMain::plotCandlestickChart()
         candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
         try
         {
-            chart = Statistics::getYearlyChartData(candlesticks, yearStart, yearRange);
+            chart = Statistics::getCandlestickChart(candlesticks);
         }
         catch (const std::exception& e)
         {
@@ -291,6 +325,7 @@ std::string WeatherAnalyzerMain::getUserPeriodFilter()
     std::cout << "=======================" << std::endl;
     std::cout << "1: Year" << std::endl;
     std::cout << "2: Day" << std::endl;
+    std::cout << "=======================" << std::endl;
 
     std::getline(std::cin, period);
     return period;
