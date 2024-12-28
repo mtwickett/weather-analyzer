@@ -1,8 +1,6 @@
 #include "TemperatureRow.h"
 
-#include <iostream>
 #include <cmath>
-#include <iostream>
 
 
 TemperatureRow::TemperatureRow(const std::string& _timestamp, const std::vector<double>& _temperatures)

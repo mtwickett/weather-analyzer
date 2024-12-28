@@ -1,10 +1,5 @@
 #pragma once
 
-#include <iostream>
-#include <map>
-#include <vector>
-#include <format>
-
 #include "TemperatureRow.h"
 #include "csvReader.h"
 #include "Candlestick.h"
@@ -33,6 +28,7 @@ private:
     std::string getUserCountry();
     std::string getUserPeriodFilter();
     std::string getUserCandlestickOption();
+    std::pair<std::string, std::string> getUserYearRange();
     std::string getUserYear();
     std::string getUserMonth();
     std::string getUserDay();

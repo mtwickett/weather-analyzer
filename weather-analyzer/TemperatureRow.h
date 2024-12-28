@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <iostream>
 
 
 // create the Temperature class specification

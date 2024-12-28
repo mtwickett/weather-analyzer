@@ -3,7 +3,6 @@
 
 // standard library includes
 #include <vector>
-#include <iostream>
 #include <fstream>
 #include <filesystem>
 #include <string>

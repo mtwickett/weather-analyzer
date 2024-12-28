@@ -1,5 +1,4 @@
 #include "WeatherAnalyzerMain.h"
-#include <iostream>
 
 
 int main()
