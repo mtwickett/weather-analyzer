@@ -4,7 +4,6 @@
 #include <numeric>
 #include <algorithm>
 #include <cmath>
-
 #include <iostream>
 
 
@@ -107,15 +106,24 @@ std::map<int, std::string, std::greater<int>> Statistics::getCandlestickChart(
 		int close = static_cast<int>(std::round(c.close));
 		int high = static_cast<int>(std::round(c.high));
 		int low = static_cast<int>(std::round(c.low));
-		std::cout << c.year << ": " << open << ": " << close << ": " << high << ": " << low <<std::endl;
+		
+		const std::string reset = "\033[0m";
+		const std::string red = "\033[31m";
+		const std::string green = "\033[32m";
 		
 		
 		for (auto& pair : chart) {
 			if (pair.first >= std::min(open, close) && pair.first <= std::max(open, close)) {
-				chart[pair.first] += " ==";
+				if (close >= open)
+					chart[pair.first] += " " + green + "==" + reset;
+				else
+					chart[pair.first] += " " + red + "==" + reset;
 			}
 			else if (pair.first >= low && pair.first <= high) {
-				chart[pair.first] += " ||";
+				if (close >= open)
+					chart[pair.first] += " " + green + "||" + reset;
+				else
+					chart[pair.first] += " " + red + "||" + reset;
 			}
 			else {
 				chart[pair.first] += "   ";

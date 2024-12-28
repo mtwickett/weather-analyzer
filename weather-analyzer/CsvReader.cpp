@@ -32,7 +32,7 @@ std::vector<TemperatureRow> CsvReader::readcsv(const std::filesystem::path fileP
 		while (std::getline(csvFile, line)) {
 			try {
 				TemperatureRow row = stringsToTempRow(tokenize(line, ','));
-				rows.emplace_back(row);
+				rows.push_back(row);
 			}
 			catch (const std::exception e) {
 				std::cout << "Bad line" << std::endl;
@@ -58,7 +58,7 @@ std::vector<std::string> CsvReader::tokenize(std::string csvLine, char delimiter
 		if (start == csvLine.length() || start == end) break;
 		if (end >= 0) token = csvLine.substr(start, end - start);
 		else token = csvLine.substr(start, csvLine.length() - start);
-		tokens.emplace_back(token);
+		tokens.push_back(token);
 		start = end + 1;
 	} while (end != std::string::npos);
 
@@ -80,7 +80,7 @@ TemperatureRow CsvReader::stringsToTempRow(std::vector<std::string> rowTokens)
 
 	std::vector<std::string> stringTemps(rowTokens.begin() + 1, rowTokens.end());
 	for (const auto& t : stringTemps) {
-		temps.emplace_back(std::stod(t));
+		temps.push_back(std::stod(t));
 	}
 
 	TemperatureRow temperatureRow {

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <format>
 
 #include "TemperatureRow.h"
 #include "csvReader.h"
@@ -31,6 +32,7 @@ private:
     std::vector<Candlestick> getCandlestickData();
     std::string getUserCountry();
     std::string getUserPeriodFilter();
+    std::string getUserCandlestickOption();
     std::string getUserYear();
     std::string getUserMonth();
     std::string getUserDay();

@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <thread>
 
 
 WeatherAnalyzerMain::WeatherAnalyzerMain()
@@ -114,20 +115,29 @@ std::vector<Candlestick> WeatherAnalyzerMain::getCandlestickData()
     unsigned int countryIndex = TemperatureRow::countries.at(country);
     std::string period = getUserPeriodFilter();
 
+    while (period != "1" && period != "2") {
+        std::cout << "Invalid entry" << std::endl;
+        period = getUserPeriodFilter();
+    }
+    
     std::map<std::string, std::vector<double>> yearToTempsMap;
     std::vector<Candlestick> candlesticks;
 
+    
     if (period == "1") {
+        std::cout << "You chose Year" << std::endl;
         yearToTempsMap = TemperatureRow::getTempsByYear(rows, countryIndex);
         candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
     }
     else {
+        std::cout << "You chose Day" << std::endl;
         std::string month = getUserMonth();
         std::string day = getUserDay();
         std::string monthDay = month + "-" + day;
         yearToTempsMap = TemperatureRow::getTempsByDayOfYear(rows, countryIndex, monthDay);
         candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
     }
+
     return candlesticks;
 }
 
@@ -145,16 +155,22 @@ void WeatherAnalyzerMain::printCandlestickData()
     }
 
     // ask user if they want to plot the candlesticks
-    std::string plotCandlesticks;
-    std::cout << "\nWould you like to plot the candlesticks?" << std::endl;
-    std::cout << "=======================" << std::endl;
-    std::cout << "1: Yes" << std::endl;
-    std::cout << "2: No" << std::endl;
-    std::cout << "=======================" << std::endl;
+    std::string answer = getUserCandlestickOption();
 
-    std::getline(std::cin, plotCandlesticks);
-    if (plotCandlesticks == "1")
+    while (answer != "1" && answer != "2") {
+        std::cout << "Invalid entry" << std::endl;
+        answer = getUserCandlestickOption();
+    }
+
+    if (answer == "1") {
+        std::cout << "You chose Yes" << std::endl;
         plotCandlestickChart(candlesticks);
+    }
+    else {
+        std::cout << "You chose No" << std::endl;
+    }
+        
+
 }
 
 
@@ -162,15 +178,14 @@ void WeatherAnalyzerMain::plotCandlestickChart(std::vector<Candlestick> candlest
 {
     std::map<int, std::string, std::greater<int>> chart = Statistics::getCandlestickChart(candlesticks);
     
-    std::cout << "\n" << std::endl;
+    std::cout << std::endl;
 
     for (const auto& pair : chart) {
-        std::cout << "[" << std::setw(4)
-            << pair.first << "]"
-            << "[" << "   " << "]" << "\\n"
+        std::cout << std::setw(4)
+            << pair.first << "   "
             << pair.second
             << std::endl;
-        break;
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
     std::string xAxis = "        ";
     for (const auto& pair : TemperatureRow::years) {
@@ -329,8 +344,26 @@ std::string WeatherAnalyzerMain::getUserPeriodFilter()
     std::cout << "=======================" << std::endl;
 
     std::getline(std::cin, period);
+
     return period;
 }
+
+
+std::string WeatherAnalyzerMain::getUserCandlestickOption()
+{
+    std::string plotCandlesticks;
+    std::cout << std::endl;
+    std::cout << "Would you like to plot the candlesticks?" << std::endl;
+    std::cout << "=======================" << std::endl;
+    std::cout << "1: Yes" << std::endl;
+    std::cout << "2: No" << std::endl;
+    std::cout << "=======================" << std::endl;
+
+    std::getline(std::cin, plotCandlesticks);
+
+    return plotCandlesticks;
+}
+
 
 
 std::string WeatherAnalyzerMain::getUserYear()
