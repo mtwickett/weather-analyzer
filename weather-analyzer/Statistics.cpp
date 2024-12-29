@@ -72,17 +72,17 @@ std::vector<LineGraphPoint> Statistics::calculateLineGraphPoints(const std::map<
 std::map<int, std::string, std::greater<int>> Statistics::getCandlestickChart(
 	const std::vector<Candlestick>& candlesticks)
 {
-	/*std::vector<Candlestick> yearsSub(candlesticks.begin() + yearStart, candlesticks.begin() + yearStart + yearRange);*/
 	std::map<int, std::string, std::greater<int>> chart = calculateYAxis(candlesticks);
+	const std::string reset = "\033[0m";
+	const std::string red = "\033[31m";
+	const std::string green = "\033[32m";
+	
 	for (const auto& c : candlesticks) {
 		int open = static_cast<int>(std::round(c.open));
 		int close = static_cast<int>(std::round(c.close));
 		int high = static_cast<int>(std::round(c.high));
 		int low = static_cast<int>(std::round(c.low));
 		
-		const std::string reset = "\033[0m";
-		const std::string red = "\033[31m";
-		const std::string green = "\033[32m";
 		
 		
 		for (auto& pair : chart) {
@@ -107,12 +107,31 @@ std::map<int, std::string, std::greater<int>> Statistics::getCandlestickChart(
 }
 
 
-//std::vector<LineGraph> Statistics::calculateLineGraph(const std::map<std::string,
-//	std::vector<double>>&yearToTempsMap)
-//{
-//	std::vector<LineGraph> linegraph;
-//	return linegraph;
-//}
+std::map<int, std::string, std::greater<int>> Statistics::calculateLineGraph(
+	const std::vector<LineGraphPoint>& linegraphPoints)
+{
+	std::map<int, std::string, std::greater<int>> lineGraph = calculateYAxis(linegraphPoints);
+	const std::string reset = "\033[0m";
+	const std::string red = "\033[31m";
+	const std::string green = "\033[32m";
+	for (const auto& p : linegraphPoints) {
+		int high = static_cast<int>(std::round(p.high));
+		int low = static_cast<int>(std::round(p.low));
+
+		for (auto& pair : lineGraph) {
+			if (pair.first == high && pair.first == low)
+				pair.second += " ++";
+			else if (pair.first == high)
+				pair.second += " " + green + "++" + reset;
+			else if (pair.first == low)
+				pair.second += " " + red + "++" + reset;
+			else
+				pair.second += "   ";
+		}
+	}
+	return lineGraph;
+
+}
 
 
 /////////////// Private methods //////////////////

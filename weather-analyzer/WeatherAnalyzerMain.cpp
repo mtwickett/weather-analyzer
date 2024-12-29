@@ -195,7 +195,6 @@ void WeatherAnalyzerMain::plotCandlestickChart()
     std::vector<Candlestick> filteredCandlesticks(
         candlesticks.begin() + yearStartIndex, 
         candlesticks.begin() + yearEndIndex + 1);
-    std::cout << filteredCandlesticks.size() << std::endl;
 
     plotCandlestickChart(filteredCandlesticks);
 }
@@ -244,7 +243,35 @@ void WeatherAnalyzerMain::printLineGraphData()
 
 void WeatherAnalyzerMain::plotLineGraph()
 {
+    std::vector<LineGraphPoint> lineGraphPoints = getLineGraphData();
+    std::pair<std::string, std::string> yearRange = getUserYearRange();
+    std::string yearStart = yearRange.first;
+    std::string yearEnd = yearRange.second;
+    int yearStartIndex = TemperatureRow::years.at(yearStart);
+    int yearEndIndex = TemperatureRow::years.at(yearEnd);
 
+    std::vector<LineGraphPoint> filteredLineGraphPoints(
+        lineGraphPoints.begin() + yearStartIndex,
+        lineGraphPoints.begin() + yearEndIndex + 1);
+
+    std::map<int, std::string, std::greater<int>> lineGraph = Statistics::calculateLineGraph(filteredLineGraphPoints);
+    auto startIt = TemperatureRow::years.lower_bound(yearStart);
+    auto endIt = TemperatureRow::years.upper_bound(yearEnd);
+
+    std::cout << std::endl;
+
+    for (const auto& pair : lineGraph) {
+        std::cout << std::setw(4)
+            << pair.first << "   "
+            << pair.second
+            << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+    std::string xAxis = "        ";
+    for (auto it = startIt; it != endIt; ++it) {
+        xAxis += it->first.substr(2, 2) + " ";
+    }
+    std::cout << "\n" << xAxis << std::endl;
 }
 
 ////////////////// private methods ///////////////////////

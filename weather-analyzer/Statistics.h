@@ -19,6 +19,8 @@ public:
 		std::vector<double>>& yearToTempsMap);
 	static std::map<int, std::string, std::greater<int>> getCandlestickChart(
 		const std::vector<Candlestick>& candlesticks);
+	static std::map<int, std::string, std::greater<int>> calculateLineGraph(
+		const std::vector<LineGraphPoint>& linegraphPoints);
 
 private:
 	static std::vector<double> getMeanHighLow(const std::vector<double>& temps);
