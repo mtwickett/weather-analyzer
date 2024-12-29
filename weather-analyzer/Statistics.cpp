@@ -45,6 +45,30 @@ std::vector<Candlestick> Statistics::calculateCandlesticks(const std::map<std::s
 }
 
 
+std::vector<LineGraphPoint> Statistics::calculateLineGraphPoints(const std::map<std::string,
+	std::vector<double>>& yearToTempsMap)
+{
+	std::vector<LineGraphPoint> lineGraphPoints;
+
+	if (yearToTempsMap.empty()) {
+		return lineGraphPoints;
+	}
+
+	for (const auto& pair : yearToTempsMap) {
+		const std::string& year = pair.first;
+		const std::vector<double>& temps = pair.second;
+		std::pair<double, double> highLow = getHighLow(temps);
+		double high = highLow.first;
+		double low = highLow.second;
+
+		LineGraphPoint lineGraphPoint(year, high, low);
+		lineGraphPoints.push_back(lineGraphPoint);
+	}
+
+	return lineGraphPoints;
+}
+
+
 std::map<int, std::string, std::greater<int>> Statistics::getCandlestickChart(
 	const std::vector<Candlestick>& candlesticks)
 {
@@ -163,18 +187,18 @@ std::map<int, std::string, std::greater<int>> Statistics::calculateYAxis(const s
 }
 
 
-std::map<int, std::string, std::greater<int>> Statistics::calculateYAxis(const std::vector<LineGraphPoints>& graphPoints)
+std::map<int, std::string, std::greater<int>> Statistics::calculateYAxis(const std::vector<LineGraphPoint>& lineGraphPoints)
 {
 	// calculate y-axis scale
 	std::map<int, std::string, std::greater<int>> yAxis;
 	double yAxisMax = std::numeric_limits<double>::min();
 	double yAxisMin = std::numeric_limits<double>::max();
 
-	for (const auto& c : graphPoints) {
-		if (c.high > yAxisMax)
-			yAxisMax = c.high;
-		if (c.low < yAxisMin)
-			yAxisMin = c.low;
+	for (const auto& p : lineGraphPoints) {
+		if (p.high > yAxisMax)
+			yAxisMax = p.high;
+		if (p.low < yAxisMin)
+			yAxisMin = p.low;
 	}
 	int yAxisMaxRound = static_cast<int>(std::round(yAxisMax));
 	int yAxisMinRound = static_cast<int>(std::round(yAxisMin));

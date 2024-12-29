@@ -1,5 +1,4 @@
 #include "WeatherAnalyzerMain.h"
-#include "Candlestick.h"
 #include "Statistics.h"
 
 #include <iomanip>
@@ -49,7 +48,7 @@ void WeatherAnalyzerMain::printMenu()
         "2: Get a Temperature",
         "3: Print Candlestick Data",
         "4: Plot Candlestick Chart",
-        "5: Print Line Graph",
+        "5: Print Line Graph Data",
         "6: Plot Line Graph",
         "======================="
     };
@@ -156,8 +155,6 @@ void WeatherAnalyzerMain::printCandlestickData()
     else {
         std::cout << "You chose No" << std::endl;
     }
-        
-
 }
 
 
@@ -204,7 +201,7 @@ void WeatherAnalyzerMain::plotCandlestickChart()
 }
 
 
-void WeatherAnalyzerMain::printLineGraphData()
+std::vector<LineGraphPoint> WeatherAnalyzerMain::getLineGraphData()
 {
     std::string country = getUserCountry();
     unsigned int countryIndex = TemperatureRow::countries.at(country);
@@ -212,12 +209,12 @@ void WeatherAnalyzerMain::printLineGraphData()
 
     
     std::map<std::string, std::vector<double>> yearToTempsMap;
-    std::vector<Candlestick> candlesticks;
+    std::vector<LineGraphPoint> lineGraphPoints;
 
     if (period == "1") {
         std::cout << "You chose Year" << std::endl;
         yearToTempsMap = TemperatureRow::getTempsByYear(rows, countryIndex);
-        candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
+        lineGraphPoints = Statistics::calculateLineGraphPoints(yearToTempsMap);
     }
     else {
         std::cout << "You chose Day" << std::endl;
@@ -225,7 +222,22 @@ void WeatherAnalyzerMain::printLineGraphData()
         std::string day = getUserDay();
         std::string monthDay = month + "-" + day;
         yearToTempsMap = TemperatureRow::getTempsByDayOfYear(rows, countryIndex, monthDay);
-        candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
+        lineGraphPoints = Statistics::calculateLineGraphPoints(yearToTempsMap);
+    }
+
+    return lineGraphPoints;
+}
+
+
+void WeatherAnalyzerMain::printLineGraphData()
+{
+    std::vector<LineGraphPoint> lineGraphPoints = getLineGraphData();
+
+    std::cout << "YEAR |  HIGH  |  LOW" << std::endl;
+    std::cout << "----------------------" << std::endl;
+    for (const auto& p : lineGraphPoints) {
+        std::cout << std::fixed << std::setprecision(3) <<
+            p.year << " | " << p.high << " | " << p.low << std::endl;
     }
 }
 

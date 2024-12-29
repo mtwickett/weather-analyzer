@@ -33,7 +33,7 @@
     <ClCompile Include="Statistics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LineGraphPoints.cpp">
+    <ClCompile Include="LineGraphPoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,7 +53,7 @@
     <ClInclude Include="Statistics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LineGraphPoints.h">
+    <ClInclude Include="LineGraphPoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

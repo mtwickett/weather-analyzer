@@ -4,10 +4,10 @@
 #include <map>
 
 
-class LineGraphPoints
+class LineGraphPoint
 {
 public:
-	LineGraphPoints(std::string _year, double _high, double _low);
+	LineGraphPoint(std::string _year, double _high, double _low);
 
 	std::string year;
 	double high;

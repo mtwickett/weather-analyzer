@@ -3,6 +3,7 @@
 #include "TemperatureRow.h"
 #include "csvReader.h"
 #include "Candlestick.h"
+#include "LineGraphPoint.h"
 
     
 
@@ -23,8 +24,8 @@ private:
     void printMenu();
 
     std::string processOption();
-
     std::vector<Candlestick> getCandlestickData();
+    std::vector<LineGraphPoint> getLineGraphData();
     std::string getUserCountry();
     std::string getUserPeriodFilter();
     std::string getUserCandlestickOption();
