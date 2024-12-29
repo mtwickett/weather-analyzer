@@ -189,8 +189,6 @@ void WeatherAnalyzerMain::plotCandlestickChart(std::vector<Candlestick> candlest
 void WeatherAnalyzerMain::plotCandlestickChart()
 {
     std::vector<Candlestick> candlesticks = getCandlestickData();
-    std::cout << candlesticks.size() << std::endl;
-
     std::pair<std::string, std::string> yearRange = getUserYearRange();
     std::string yearStart = yearRange.first;
     std::string yearEnd = yearRange.second;
