@@ -131,7 +131,7 @@
   <ItemGroup>
     <ClCompile Include="Candlestick.cpp" />
     <ClCompile Include="CsvReader.cpp" />
-    <ClCompile Include="LineGraph.cpp" />
+    <ClCompile Include="LineGraphPoints.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Statistics.cpp" />
     <ClCompile Include="TemperatureRow.cpp" />
@@ -140,7 +140,7 @@
   <ItemGroup>
     <ClInclude Include="Candlestick.h" />
     <ClInclude Include="CsvReader.h" />
-    <ClInclude Include="LineGraph.h" />
+    <ClInclude Include="LineGraphPoints.h" />
     <ClInclude Include="Statistics.h" />
     <ClInclude Include="TemperatureRow.h" />
     <ClInclude Include="WeatherAnalyzerMain.h" />

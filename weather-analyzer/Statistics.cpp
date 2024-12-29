@@ -1,60 +1,9 @@
 #include "Statistics.h"
-#include "LineGraph.h"
 
 #include <numeric>
 #include <algorithm>
 #include <cmath>
 #include <iostream>
-
-
-
-std::vector<double> Statistics::getMeanHighLow(const std::vector<double>& temps)
-{
-	if (temps.empty()) {
-		return { 0.0, 0.0, 0.0 };
-	}
-
-	double sum = 0.0;
-	double high = temps[0];
-	double low = temps[0];
-
-	for (double t : temps) {
-		sum += t;
-		if (t > high)
-			high = t;
-		if (t < low)
-			low = t;
-	}
-
-	return { sum / temps.size(), high, low };
-}
-
-
-std::map<int, std::string, std::greater<int>> Statistics::calculateYAxis(const std::vector<Candlestick>& candlesticks)
-{
-	// calculate y-axis scale
-	std::map<int, std::string, std::greater<int>> yAxis;
-	double yAxisMax = std::numeric_limits<double>::min();
-	double yAxisMin = std::numeric_limits<double>::max();
-
-	for (const auto& c : candlesticks) {
-		double highest = std::max({ c.open, c.close, c.high });
-		double lowest = std::min({ c.open, c.close, c.low });
-		if (highest > yAxisMax)
-			yAxisMax = highest;
-		if (lowest < yAxisMin)
-			yAxisMin = lowest;
-	}
-	int yAxisMaxRound = static_cast<int>(std::round(yAxisMax));
-	int yAxisMinRound = static_cast<int>(std::round(yAxisMin));
-
-
-	for (int i = yAxisMaxRound; i >= yAxisMinRound; i -= 1) {
-		yAxis[i] = "";
-	}
-
-	return yAxis;
-}
 
 
 std::vector<Candlestick> Statistics::calculateCandlesticks(const std::map<std::string, 
@@ -134,9 +83,105 @@ std::map<int, std::string, std::greater<int>> Statistics::getCandlestickChart(
 }
 
 
-std::vector<LineGraph> Statistics::calculateLineGraph(const std::map<std::string,
-	std::vector<double>>&yearToTempsMap)
+//std::vector<LineGraph> Statistics::calculateLineGraph(const std::map<std::string,
+//	std::vector<double>>&yearToTempsMap)
+//{
+//	std::vector<LineGraph> linegraph;
+//	return linegraph;
+//}
+
+
+/////////////// Private methods //////////////////
+
+std::vector<double> Statistics::getMeanHighLow(const std::vector<double>& temps)
 {
-	std::vector<LineGraph> linegraph;
-	return linegraph;
+	if (temps.empty()) {
+		return { 0.0, 0.0, 0.0 };
+	}
+
+	double sum = 0.0;
+	double high = temps[0];
+	double low = temps[0];
+
+	for (double t : temps) {
+		sum += t;
+		if (t > high)
+			high = t;
+		if (t < low)
+			low = t;
+	}
+
+	return { sum / temps.size(), high, low };
+}
+
+
+std::pair<double, double> Statistics::getHighLow(const std::vector<double>& temps)
+{
+	if (temps.empty()) {
+		return { 0.0, 0.0 };
+	}
+
+	double high = temps[0];
+	double low = temps[0];
+
+	for (double t : temps) {
+		if (t > high)
+			high = t;
+		if (t < low)
+			low = t;
+	}
+
+	return { high, low };
+}
+
+
+
+std::map<int, std::string, std::greater<int>> Statistics::calculateYAxis(const std::vector<Candlestick>& candlesticks)
+{
+	// calculate y-axis scale
+	std::map<int, std::string, std::greater<int>> yAxis;
+	double yAxisMax = std::numeric_limits<double>::min();
+	double yAxisMin = std::numeric_limits<double>::max();
+
+	for (const auto& c : candlesticks) {
+		double highest = std::max({ c.open, c.close, c.high });
+		double lowest = std::min({ c.open, c.close, c.low });
+		if (highest > yAxisMax)
+			yAxisMax = highest;
+		if (lowest < yAxisMin)
+			yAxisMin = lowest;
+	}
+	int yAxisMaxRound = static_cast<int>(std::round(yAxisMax));
+	int yAxisMinRound = static_cast<int>(std::round(yAxisMin));
+
+
+	for (int i = yAxisMaxRound; i >= yAxisMinRound; i -= 1) {
+		yAxis[i] = "";
+	}
+
+	return yAxis;
+}
+
+
+std::map<int, std::string, std::greater<int>> Statistics::calculateYAxis(const std::vector<LineGraphPoints>& graphPoints)
+{
+	// calculate y-axis scale
+	std::map<int, std::string, std::greater<int>> yAxis;
+	double yAxisMax = std::numeric_limits<double>::min();
+	double yAxisMin = std::numeric_limits<double>::max();
+
+	for (const auto& c : graphPoints) {
+		if (c.high > yAxisMax)
+			yAxisMax = c.high;
+		if (c.low < yAxisMin)
+			yAxisMin = c.low;
+	}
+	int yAxisMaxRound = static_cast<int>(std::round(yAxisMax));
+	int yAxisMinRound = static_cast<int>(std::round(yAxisMin));
+
+	for (int i = yAxisMaxRound; i >= yAxisMinRound; i -= 1) {
+		yAxis[i] = "";
+	}
+
+	return yAxis;
 }

@@ -208,19 +208,27 @@ void WeatherAnalyzerMain::plotCandlestickChart()
 
 void WeatherAnalyzerMain::printLineGraphData()
 {
-    std::map<std::string, std::vector<double>> yearToTempsMap;
-    std::vector<LineGraph> lineGraph;
-    std::map<int, std::string, std::greater<int>> chart;
-
-    // prompt user for a country  
     std::string country = getUserCountry();
     unsigned int countryIndex = TemperatureRow::countries.at(country);
+    std::string period = getUserPeriodFilter();
 
-    std::string day;
-    std::cout << "Enter a month and day as: 01-01" << std::endl;
-    std::getline(std::cin, day);
     
-    yearToTempsMap = TemperatureRow::getTempsByDayOfYear(rows, countryIndex, day);
+    std::map<std::string, std::vector<double>> yearToTempsMap;
+    std::vector<Candlestick> candlesticks;
+
+    if (period == "1") {
+        std::cout << "You chose Year" << std::endl;
+        yearToTempsMap = TemperatureRow::getTempsByYear(rows, countryIndex);
+        candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
+    }
+    else {
+        std::cout << "You chose Day" << std::endl;
+        std::string month = getUserMonth();
+        std::string day = getUserDay();
+        std::string monthDay = month + "-" + day;
+        yearToTempsMap = TemperatureRow::getTempsByDayOfYear(rows, countryIndex, monthDay);
+        candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
+    }
 }
 
 
