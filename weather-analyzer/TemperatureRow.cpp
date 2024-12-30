@@ -175,6 +175,7 @@ std::map <std::string, std::vector<double>> TemperatureRow::getTempsByDayOfYear(
 }
 
 
+
 const std::map<std::string, int> TemperatureRow::years = {
 	{"1980", 0},
 	{"1981", 1},

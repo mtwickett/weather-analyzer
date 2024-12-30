@@ -254,7 +254,15 @@ void WeatherAnalyzerMain::plotLineGraph()
         lineGraphPoints.begin() + yearStartIndex,
         lineGraphPoints.begin() + yearEndIndex + 1);
 
-    std::map<int, std::string, std::greater<int>> lineGraph = Statistics::calculateLineGraph(filteredLineGraphPoints);
+    std::map<int, std::string, std::greater<int>> lineGraph;
+    std::string highOrLow = getUserHighLow();
+    if (highOrLow == "1") {
+        lineGraph = Statistics::calculateLineGraphHighs(filteredLineGraphPoints);
+    }
+    else
+        lineGraph = Statistics::calculateLineGraphLows(filteredLineGraphPoints);
+
+    
     auto startIt = TemperatureRow::years.lower_bound(yearStart);
     auto endIt = TemperatureRow::years.upper_bound(yearEnd);
 
@@ -265,7 +273,7 @@ void WeatherAnalyzerMain::plotLineGraph()
             << pair.first << "   "
             << pair.second
             << std::endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(150));
     }
     std::string xAxis = "        ";
     for (auto it = startIt; it != endIt; ++it) {
@@ -273,6 +281,8 @@ void WeatherAnalyzerMain::plotLineGraph()
     }
     std::cout << "\n" << xAxis << std::endl;
 }
+
+
 
 ////////////////// private methods ///////////////////////
 std::string WeatherAnalyzerMain::getUserCountry()
@@ -352,6 +362,23 @@ std::pair<std::string, std::string> WeatherAnalyzerMain::getUserYearRange()
     return { yearStart, yearEnd };
 }
 
+
+std::string WeatherAnalyzerMain::getUserHighLow()
+{
+    std::string answer;
+    do {
+        std::cout << std::endl;
+        std::cout << "Would you like to plot the highs or lows?" << std::endl;
+        std::cout << "=======================" << std::endl;
+        std::cout << "1: Highs" << std::endl;
+        std::cout << "2: Lows" << std::endl;
+        std::cout << "=======================" << std::endl;
+
+        std::getline(std::cin, answer);
+    } while (answer != "1" && answer != "2");
+
+    return answer;
+}
 
 
 std::string WeatherAnalyzerMain::getUserYear()

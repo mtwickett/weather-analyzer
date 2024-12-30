@@ -107,31 +107,72 @@ std::map<int, std::string, std::greater<int>> Statistics::getCandlestickChart(
 }
 
 
-std::map<int, std::string, std::greater<int>> Statistics::calculateLineGraph(
+std::map<int, std::string, std::greater<int>> Statistics::calculateLineGraphHighs(
+	const std::vector<LineGraphPoint>& lineGraphPoints)
+{
+	std::map<int, std::string, std::greater<int>> lineGraph = calculateYAxisHighs(lineGraphPoints);
+	const std::string reset = "\033[0m";
+	const std::string green = "\033[32m";
+	;
+	
+	for (const auto& p : lineGraphPoints) {
+		int high = static_cast<int>(std::round(p.high));
+
+		for (auto& pair : lineGraph) {
+			if (pair.first <= high)
+				pair.second += " " + green + "||" + reset;
+			else
+				pair.second += "   ";
+		}
+		
+	}
+	return lineGraph;
+}
+
+
+std::map<int, std::string, std::greater<int>> Statistics::calculateLineGraphLows(
 	const std::vector<LineGraphPoint>& linegraphPoints)
 {
-	std::map<int, std::string, std::greater<int>> lineGraph = calculateYAxis(linegraphPoints);
+	std::map<int, std::string, std::greater<int>> lineGraph = calculateYAxisLows(linegraphPoints);
 	const std::string reset = "\033[0m";
 	const std::string red = "\033[31m";
-	const std::string green = "\033[32m";
+	
 	for (const auto& p : linegraphPoints) {
-		int high = static_cast<int>(std::round(p.high));
 		int low = static_cast<int>(std::round(p.low));
 
 		for (auto& pair : lineGraph) {
-			if (pair.first == high && pair.first == low)
-				pair.second += " ++";
-			else if (pair.first == high)
-				pair.second += " " + green + "++" + reset;
-			else if (pair.first == low)
-				pair.second += " " + red + "++" + reset;
+			if (pair.first <= low)
+				pair.second += " " + red + "||" + reset;
 			else
 				pair.second += "   ";
 		}
 	}
 	return lineGraph;
-
 }
+
+
+
+std::map<int, std::string, std::greater<int>> Statistics::getHighLowDifferenceScatterPlot(
+	const std::vector<LineGraphPoint>& linegraphPoints)
+{
+	std::map<int, std::string, std::greater<int>> scatterPlot = calculateYAxisLows(linegraphPoints);
+	const std::string reset = "\033[0m";
+	const std::string blue = "\033[34m";
+
+	for (const auto& p : linegraphPoints) {
+		int diff = static_cast<int>(std::round(getHighLowDifference({ p.high, p.low })));
+
+		for (auto& pair : scatterPlot) {
+			if (pair.first == diff)
+				pair.second += " " + blue + "++" + reset;
+			else
+				pair.second += "   ";
+		}
+	}
+	return scatterPlot;
+}
+
+
 
 
 /////////////// Private methods //////////////////
@@ -178,6 +219,10 @@ std::pair<double, double> Statistics::getHighLow(const std::vector<double>& temp
 }
 
 
+double Statistics::getHighLowDifference(std::pair<double, double> highLow) {
+	return abs(highLow.first - highLow.second);
+}
+
 
 std::map<int, std::string, std::greater<int>> Statistics::calculateYAxis(const std::vector<Candlestick>& candlesticks)
 {
@@ -206,16 +251,40 @@ std::map<int, std::string, std::greater<int>> Statistics::calculateYAxis(const s
 }
 
 
-std::map<int, std::string, std::greater<int>> Statistics::calculateYAxis(const std::vector<LineGraphPoint>& lineGraphPoints)
+std::map<int, std::string, std::greater<int>> Statistics::calculateYAxisHighs(const std::vector<LineGraphPoint>& lineGraphPoints)
 {
 	// calculate y-axis scale
 	std::map<int, std::string, std::greater<int>> yAxis;
-	double yAxisMax = std::numeric_limits<double>::min();
-	double yAxisMin = std::numeric_limits<double>::max();
+	double yAxisMax = lineGraphPoints[0].high;
+	double yAxisMin = lineGraphPoints[0].high;
 
 	for (const auto& p : lineGraphPoints) {
 		if (p.high > yAxisMax)
 			yAxisMax = p.high;
+		if (p.high < yAxisMin)
+			yAxisMin = p.high;
+	}
+	int yAxisMaxRound = static_cast<int>(std::round(yAxisMax));
+	int yAxisMinRound = static_cast<int>(std::round(yAxisMin));
+
+	for (int i = yAxisMaxRound; i >= yAxisMinRound; i -= 1) {
+		yAxis[i] = "";
+	}
+
+	return yAxis;
+}
+
+
+std::map<int, std::string, std::greater<int>> Statistics::calculateYAxisLows(const std::vector<LineGraphPoint>& lineGraphPoints)
+{
+	// calculate y-axis scale
+	std::map<int, std::string, std::greater<int>> yAxis;
+	double yAxisMax = lineGraphPoints[0].low;
+	double yAxisMin = lineGraphPoints[0].low;
+
+	for (const auto& p : lineGraphPoints) {
+		if (p.low > yAxisMax)
+			yAxisMax = p.low;
 		if (p.low < yAxisMin)
 			yAxisMin = p.low;
 	}
@@ -228,3 +297,31 @@ std::map<int, std::string, std::greater<int>> Statistics::calculateYAxis(const s
 
 	return yAxis;
 }
+
+
+std::map<int, std::string, std::greater<int>> Statistics::calculateYAxisHighLowDiff(const std::vector<LineGraphPoint>& lineGraphPoints)
+{
+	// calculate y-axis scale
+	std::map<int, std::string, std::greater<int>> yAxis;
+	double highLowDiff = getHighLowDifference({ lineGraphPoints[0].high, lineGraphPoints[0].low });
+	double yAxisMax = highLowDiff;
+	double yAxisMin = highLowDiff;
+
+	for (const auto& p : lineGraphPoints) {
+		highLowDiff = getHighLowDifference({ p.high, p.low });
+		if (highLowDiff > yAxisMax)
+			yAxisMax = highLowDiff;
+		if (highLowDiff < yAxisMin)
+			yAxisMin = highLowDiff;
+	}
+	int yAxisMaxRound = static_cast<int>(std::round(yAxisMax));
+	int yAxisMinRound = static_cast<int>(std::round(yAxisMin));
+
+	for (int i = yAxisMaxRound; i >= yAxisMinRound; i -= 1) {
+		yAxis[i] = "";
+	}
+
+	return yAxis;
+}
+
+

@@ -30,6 +30,7 @@ private:
     std::string getUserPeriodFilter();
     std::string getUserCandlestickOption();
     std::pair<std::string, std::string> getUserYearRange();
+    std::string getUserHighLow();
     std::string getUserYear();
     std::string getUserMonth();
     std::string getUserDay();
