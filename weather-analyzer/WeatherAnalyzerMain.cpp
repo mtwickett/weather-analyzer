@@ -283,6 +283,33 @@ void WeatherAnalyzerMain::plotLineGraph()
 }
 
 
+void WeatherAnalyzerMain::getPredictionDayTemp()
+{
+    std::string country = getUserCountry();
+    unsigned int countryIndex = TemperatureRow::countries.at(country);
+    std::map<std::string, std::vector<double>> yearToTempsMap;
+    std::vector<LineGraphPoint> lineGraphPoints;
+    std::string month = getUserMonth();
+    std::string day = getUserDay();
+    std::string monthDay = month + "-" + day;
+    yearToTempsMap = TemperatureRow::getTempsByDayOfYear(rows, countryIndex, monthDay);
+    lineGraphPoints = Statistics::calculateLineGraphPoints(yearToTempsMap);
+    std::string highLow = getUserHighLow();
+    std::vector<std::pair<std::string, double>> predicationData;
+    if (highLow == "1") {
+        for (const auto p : lineGraphPoints) {
+            predicationData.push_back({ p.year, p.high });
+        }
+    }
+    else {
+        for (const auto p : lineGraphPoints) {
+            predicationData.push_back({ p.year, p.low });
+        }
+    }
+
+
+
+}
 
 ////////////////// private methods ///////////////////////
 std::string WeatherAnalyzerMain::getUserCountry()
@@ -368,7 +395,7 @@ std::string WeatherAnalyzerMain::getUserHighLow()
     std::string answer;
     do {
         std::cout << std::endl;
-        std::cout << "Would you like to plot the highs or lows?" << std::endl;
+        std::cout << "Would you like the highs or lows?" << std::endl;
         std::cout << "=======================" << std::endl;
         std::cout << "1: Highs" << std::endl;
         std::cout << "2: Lows" << std::endl;

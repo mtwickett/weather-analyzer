@@ -21,6 +21,7 @@ private:
     void plotCandlestickChart();
     void printLineGraphData();
     void plotLineGraph();
+    void getPredictionDayTemp();
     void printMenu();
 
     std::string processOption();

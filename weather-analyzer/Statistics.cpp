@@ -152,28 +152,6 @@ std::map<int, std::string, std::greater<int>> Statistics::calculateLineGraphLows
 
 
 
-std::map<int, std::string, std::greater<int>> Statistics::getHighLowDifferenceScatterPlot(
-	const std::vector<LineGraphPoint>& linegraphPoints)
-{
-	std::map<int, std::string, std::greater<int>> scatterPlot = calculateYAxisLows(linegraphPoints);
-	const std::string reset = "\033[0m";
-	const std::string blue = "\033[34m";
-
-	for (const auto& p : linegraphPoints) {
-		int diff = static_cast<int>(std::round(getHighLowDifference({ p.high, p.low })));
-
-		for (auto& pair : scatterPlot) {
-			if (pair.first == diff)
-				pair.second += " " + blue + "++" + reset;
-			else
-				pair.second += "   ";
-		}
-	}
-	return scatterPlot;
-}
-
-
-
 
 /////////////// Private methods //////////////////
 
@@ -216,11 +194,6 @@ std::pair<double, double> Statistics::getHighLow(const std::vector<double>& temp
 	}
 
 	return { high, low };
-}
-
-
-double Statistics::getHighLowDifference(std::pair<double, double> highLow) {
-	return abs(highLow.first - highLow.second);
 }
 
 
@@ -299,29 +272,26 @@ std::map<int, std::string, std::greater<int>> Statistics::calculateYAxisLows(con
 }
 
 
-std::map<int, std::string, std::greater<int>> Statistics::calculateYAxisHighLowDiff(const std::vector<LineGraphPoint>& lineGraphPoints)
+double Statistics::getStandardDeviation(std::vector<std::pair<std::string, double>> predictionData)
 {
-	// calculate y-axis scale
-	std::map<int, std::string, std::greater<int>> yAxis;
-	double highLowDiff = getHighLowDifference({ lineGraphPoints[0].high, lineGraphPoints[0].low });
-	double yAxisMax = highLowDiff;
-	double yAxisMin = highLowDiff;
+	if (predictionData.empty()) return 0.0;
 
-	for (const auto& p : lineGraphPoints) {
-		highLowDiff = getHighLowDifference({ p.high, p.low });
-		if (highLowDiff > yAxisMax)
-			yAxisMax = highLowDiff;
-		if (highLowDiff < yAxisMin)
-			yAxisMin = highLowDiff;
+	double sum = 0.0;
+	double sumSquaredDiff = 0.0;
+	int numDataPoints = predictionData.size();
+
+	for (const auto& pair : predictionData) {
+		sum += pair.second;
 	}
-	int yAxisMaxRound = static_cast<int>(std::round(yAxisMax));
-	int yAxisMinRound = static_cast<int>(std::round(yAxisMin));
+	double mean = sum / numDataPoints;
 
-	for (int i = yAxisMaxRound; i >= yAxisMinRound; i -= 1) {
-		yAxis[i] = "";
+	for (const auto& pair : predictionData) {
+		sumSquaredDiff += pow(pair.second - mean, 2);
 	}
 
-	return yAxis;
+	return sqrt(sumSquaredDiff / numDataPoints); 
 }
+
+
 
 
