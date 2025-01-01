@@ -1,7 +1,7 @@
 #include "CsvReader.h"
 
 
-std::filesystem::path CsvReader::getFilePath(const std::string fileName)
+const std::filesystem::path CsvReader::getFilePath(const std::string fileName)
 {
 	std::filesystem::path rootPath = std::filesystem::current_path();
 	std::filesystem::path filePath = rootPath / "data" / fileName;
@@ -15,10 +15,11 @@ std::filesystem::path CsvReader::getFilePath(const std::string fileName)
 }
 
 
-std::vector<TemperatureRow> CsvReader::readcsv(const std::filesystem::path filePath)
+const std::vector<TemperatureRow> CsvReader::readcsv(const std::string fileName)
 {
 
 	std::vector<TemperatureRow> rows;
+	const std::filesystem::path filePath = getFilePath(fileName);
 	// pass std::filesystem::path to the ifstream constructor - uses implicit conversion to std::string 
 	std::ifstream csvFile{ filePath };
 	std::string line;
@@ -39,7 +40,8 @@ std::vector<TemperatureRow> CsvReader::readcsv(const std::filesystem::path fileP
 			}
 		}
 	}
-	std::cout << "CsvReader::readcsv read " << rows.size() << " rows" << std::endl;
+	std::cout << "The dataset was successfully read in with " << rows.size() << " rows." << std::endl;
+	std::cout << "Check the About section for dataset information." << std::endl;
 
 	return rows;
 }

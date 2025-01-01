@@ -12,7 +12,7 @@
 class TemperatureRow
 {
 // declare the constructor using const as the values do not need to be altered 
-// use call by reference so that copies 
+// use call by reference so that copies are not made
 public:
     TemperatureRow(const std::string& _timestamp, const std::vector<double>& _temperatures);
     

@@ -23,7 +23,7 @@ void WeatherAnalyzerMain::init()
 {
     try
     {
-        rows = CsvReader::readcsv(CsvReader::getFilePath("weather_data_EU_1980-2019_temp_only.csv"));
+        rows = CsvReader::readcsv("weather_data_EU_1980-2019_temp_only.csv");
     }
     catch (const std::exception& e)
     {
@@ -78,7 +78,11 @@ std::string WeatherAnalyzerMain::processOption()
 
 void WeatherAnalyzerMain::about()
 {
-    std::cout << "---Check weather temperatures in European countries---" << std::endl;
+    std::cout << "---About Section---" << std::endl;
+    std::cout << "The dataset contains an hourly temperature in Degrees Celcius from 1980 to 2019" << std::endl;
+    std::cout << "for 28 European countries. To determine the temperature, it uses a" << std::endl;
+    std::cout << "population-weighted mean across all MERRA-2 grid cells within each country." << std::endl;
+    std::cout << "The original dataset can be found here: https://data.open-power-system-data.org/weather_data/2020-09-16." << std::endl;
 }
 
 
