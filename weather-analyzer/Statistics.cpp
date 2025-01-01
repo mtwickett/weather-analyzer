@@ -272,26 +272,59 @@ std::map<int, std::string, std::greater<int>> Statistics::calculateYAxisLows(con
 }
 
 
-double Statistics::getStandardDeviation(std::vector<std::pair<std::string, double>> predictionData)
+double Statistics::getCorrelationCoefficient(std::vector<std::pair<std::string, double>> predictionData)
 {
 	if (predictionData.empty()) return 0.0;
 
-	double sum = 0.0;
-	double sumSquaredDiff = 0.0;
-	int numDataPoints = predictionData.size();
-
+	double sumX = 0.0, sumY = 0.0, sumXY = 0.0;
+	double sumXSquared = 0.0, sumYSquared = 0.0;
 	for (const auto& pair : predictionData) {
-		sum += pair.second;
+		double X = std::stod(pair.first);
+		double Y = pair.second;
+		sumX += X;
+		sumY += Y;
+		sumXY += X * Y;
+		sumXSquared += pow(X, 2);
+		sumYSquared += pow(Y, 2);
 	}
-	double mean = sum / numDataPoints;
 
-	for (const auto& pair : predictionData) {
-		sumSquaredDiff += pow(pair.second - mean, 2);
-	}
-
-	return sqrt(sumSquaredDiff / numDataPoints); 
+	double numDataPoints = predictionData.size();
+	double r = (numDataPoints * sumXY - sumX * sumY) /
+		sqrt((numDataPoints * sumXSquared - pow(sumX, 2)) * 
+			(numDataPoints * sumYSquared - pow(sumY, 2)));
+	
+	return r;
 }
 
 
+double Statistics::getLinearRegressionPrediction(std::vector<std::pair<std::string, double>> predictionData,
+	double year)
+{
+	if (predictionData.empty()) {
+		throw std::invalid_argument("Prediction data cannot be empty.");
+	}
+
+	double sumX = 0.0, sumY = 0.0, sumXY = 0.0;
+	double sumXSquared = 0.0;
+	for (const auto& pair : predictionData) {
+		double X = std::stod(pair.first);
+		double Y = pair.second;
+		sumX += X;
+		sumY += Y;
+		sumXY += X * Y;
+		sumXSquared += pow(X, 2);
+	}
+
+	double numDataPoints = predictionData.size();
+	double mNumerator = (numDataPoints * sumXY - sumX * sumY);
+	double mDenominator = numDataPoints * sumXSquared - pow(sumX, 2);
+	if (mDenominator == 0.0) {
+		throw std::runtime_error("Cannot calculate linear regression; check input data for identical X values.");
+	}
+	double m = mNumerator / mDenominator;
+	double b = (sumY - m * sumX) / numDataPoints;
+
+	return m * year + b;
+}
 
 

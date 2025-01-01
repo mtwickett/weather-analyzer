@@ -13,7 +13,8 @@ WeatherAnalyzerMain::WeatherAnalyzerMain()
         {"3", &WeatherAnalyzerMain::printCandlestickData},
         {"4", &WeatherAnalyzerMain::plotCandlestickChart},
         {"5", &WeatherAnalyzerMain::printLineGraphData},
-        {"6", &WeatherAnalyzerMain::plotLineGraph}
+        {"6", &WeatherAnalyzerMain::plotLineGraph},
+        {"7", &WeatherAnalyzerMain::getPredictionDayTemp}
     };
 }
 
@@ -50,6 +51,7 @@ void WeatherAnalyzerMain::printMenu()
         "4: Plot Candlestick Chart",
         "5: Print Line Graph Data",
         "6: Plot Line Graph",
+        "7: Predict a high or low for a day of the year",
         "======================="
     };
 
@@ -256,7 +258,7 @@ void WeatherAnalyzerMain::plotLineGraph()
 
     std::map<int, std::string, std::greater<int>> lineGraph;
     std::string highOrLow = getUserHighLow();
-    if (highOrLow == "1") {
+    if (highOrLow == "High") {
         lineGraph = Statistics::calculateLineGraphHighs(filteredLineGraphPoints);
     }
     else
@@ -294,9 +296,9 @@ void WeatherAnalyzerMain::getPredictionDayTemp()
     std::string monthDay = month + "-" + day;
     yearToTempsMap = TemperatureRow::getTempsByDayOfYear(rows, countryIndex, monthDay);
     lineGraphPoints = Statistics::calculateLineGraphPoints(yearToTempsMap);
-    std::string highLow = getUserHighLow();
+    std::string extremumTemp = getUserHighLow();
     std::vector<std::pair<std::string, double>> predicationData;
-    if (highLow == "1") {
+    if (extremumTemp == "High") {
         for (const auto p : lineGraphPoints) {
             predicationData.push_back({ p.year, p.high });
         }
@@ -306,8 +308,26 @@ void WeatherAnalyzerMain::getPredictionDayTemp()
             predicationData.push_back({ p.year, p.low });
         }
     }
-
-
+    
+    double r = Statistics::getCorrelationCoefficient(predicationData);
+    if (r >= 0.7 || r <= -0.7) {
+        std::cout << "The correlation coefficient (r) shows a strong correlation of: " << r << std::endl;
+        std::cout << "Therefore, the prediction has been calculated with simple linear regression." << std::endl;
+        double predYear = getUserPredictionYear();
+        int predTemp = static_cast<int>(std::round(Statistics::getLinearRegressionPrediction(predicationData, predYear)));
+        std::cout << "The " << extremumTemp << " prediction for " << day << " " << month << " is " << predTemp << std::endl;
+    }
+    else {
+        // average prediction
+        std::cout << "The correlation coefficient (r) shows a weak correlation of only: " << r << std::endl;
+        std::cout << "Therefore, the prediction is the mean of all years on that day." << std::endl;
+        double sum = 0.0;
+        for (const auto& pair : predicationData) {
+            sum += pair.second;
+        }
+        int average = static_cast<int>(std::round(sum / predicationData.size()));
+        std::cout << "The " << extremumTemp << " prediction for " << day << " " << month << " is " << average << std::endl;
+    }
 
 }
 
@@ -378,7 +398,7 @@ std::pair<std::string, std::string> WeatherAnalyzerMain::getUserYearRange()
     std::string yearEnd;
 
     do {
-        std::cout << "Choose a year range between 1980-2019 (inclusive)" << std::endl;
+        std::cout << "Choose a year range between 1980-2019 (inclusive): " << std::endl;
         std::cout << "Enter start year:" << std::endl;
         std::getline(std::cin, yearStart);
         std::cout << "Enter end year:" << std::endl;
@@ -404,7 +424,10 @@ std::string WeatherAnalyzerMain::getUserHighLow()
         std::getline(std::cin, answer);
     } while (answer != "1" && answer != "2");
 
-    return answer;
+    if (answer == "1")
+        return "High";
+    else
+        return "Low";
 }
 
 
@@ -468,4 +491,18 @@ std::string WeatherAnalyzerMain::getUserHour()
     } while (std::find(hours.begin(), hours.end(), hour) == hours.end());
 
     return hour;
+}
+
+
+double WeatherAnalyzerMain::getUserPredictionYear()
+{
+    std::string year;
+    double yearNum = 0.0;
+    do {
+        std::cout << "What year would you like to predict?" << std::endl;
+        std::getline(std::cin, year);
+        yearNum = std::stod(year);
+    } while (yearNum > 2019);
+
+    return yearNum;
 }

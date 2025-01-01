@@ -36,6 +36,7 @@ private:
     std::string getUserMonth();
     std::string getUserDay();
     std::string getUserHour();
+    double getUserPredictionYear();
 
     std::map<std::string, void(WeatherAnalyzerMain::*)()> OPTIONS;
     std::vector<TemperatureRow> rows;

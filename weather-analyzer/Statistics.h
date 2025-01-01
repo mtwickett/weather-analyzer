@@ -23,6 +23,8 @@ public:
 		const std::vector<LineGraphPoint>& linegraphPoints);
 	static std::map<int, std::string, std::greater<int>> calculateLineGraphLows(
 		const std::vector<LineGraphPoint>& linegraphPoints);
+	static double getCorrelationCoefficient(std::vector<std::pair<std::string, double>> predictionData);
+	static double getLinearRegressionPrediction(std::vector<std::pair<std::string, double>> predictionData, double year);
 
 private:
 	static std::vector<double> getMeanHighLow(const std::vector<double>& temps);
@@ -30,6 +32,6 @@ private:
 	static std::map<int, std::string, std::greater<int>> calculateYAxis(const std::vector<Candlestick>& candlesticks);
 	static std::map<int, std::string, std::greater<int>> calculateYAxisHighs(const std::vector<LineGraphPoint>& lineGraphPoints);
 	static std::map<int, std::string, std::greater<int>> calculateYAxisLows(const std::vector<LineGraphPoint>& lineGraphPoints);
-	static double getStandardDeviation(std::vector<std::pair<std::string, double>> predictionData);
+	
 };
 

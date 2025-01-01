@@ -58,6 +58,7 @@ std::vector<std::string> CsvReader::tokenize(std::string csvLine, char delimiter
 		if (start == csvLine.length() || start == end) break;
 		if (end >= 0) token = csvLine.substr(start, end - start);
 		else token = csvLine.substr(start, csvLine.length() - start);
+		token.erase(std::remove_if(token.begin(), token.end(), ::isspace), token.end());
 		tokens.push_back(token);
 		start = end + 1;
 	} while (end != std::string::npos);
