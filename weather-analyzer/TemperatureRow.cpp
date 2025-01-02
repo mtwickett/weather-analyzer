@@ -10,62 +10,9 @@ TemperatureRow::TemperatureRow(const std::string& _timestamp, const std::vector<
 
 }
 
-const std::map<std::string, unsigned int> TemperatureRow::countries = {
-    {"AUSTRIA", 0},
-    {"BELGIUM", 1},
-    {"BULGARIA", 2},
-    {"SWITZERLAND", 3},
-    {"CZECH REPUBLIC", 4},
-    {"GERMANY", 5},
-    {"DENMARK", 6},
-    {"ESTONIA", 7},
-    {"SPAIN", 8},
-    {"FINLAND", 9},
-    {"FRANCE", 10},
-    {"UNITED KINGDOM", 11},
-    {"GREECE", 12},
-    {"CROATIA", 13},
-    {"HUNGARY", 14},
-    {"IRELAND", 15},
-    {"ITALY", 16},
-    {"LITHUANIA", 17},
-    {"LUXEMBOURG", 18},
-    {"LATVIA", 19},
-    {"NETHERLANDS", 20},
-    {"NORWAY", 21},
-    {"POLAND", 22},
-    {"PORTUGAL", 23},
-    {"ROMANIA", 24},
-    {"SWEDEN", 25},
-    {"SLOVENIA", 26},
-    {"SLOVAKIA", 27}
-};
-
-// Getter for timestamp
-std::string TemperatureRow::getTimestamp() const {
-    return timestamp;
-}
-
-// Parse year from UTC timestamp
-std::string TemperatureRow::getYear() const {
-    return timestamp.substr(0, 4); // "1980-01-01T00:00:00Z"
-}
-
-std::string TemperatureRow::getMonth() const {
-    return timestamp.substr(5, 2); // "1980-01-01T00:00:00Z"
-}
-
-// Parse day from UTC timestamp
-std::string TemperatureRow::getDay() const {
-    return timestamp.substr(8, 2);
-}
-
-
-void TemperatureRow::printRow() {
-    std::cout << "UTC Timestamp: " << timestamp << "\n";
-    for (const auto& pair : countries) {
-        std::cout << pair.first << ": " << temperatures[pair.second] << std::endl;
-    }
+const std::vector<double>& TemperatureRow::getTemperatures() const
+{
+	return TemperatureRow::temperatures;
 }
 
 
@@ -88,36 +35,6 @@ const int TemperatureRow::getRowIndex(const std::vector<TemperatureRow>& rows,
 	}
 
 	return -1;
-}
-
-
-const std::vector<TemperatureRow> TemperatureRow::getRowsByYear(const std::vector<TemperatureRow>& rows,
-	const std::string& year)
-{
-	std::vector<TemperatureRow> rowsByYear;
-	for (const auto& row : rows) {
-		std::string rowYear = row.getYear();
-		if (rowYear == year)
-			rowsByYear.push_back(row);
-		else if (rowYear > year)
-			break;
-	}
-	return rowsByYear;
-}
-
-
-const std::vector<TemperatureRow> TemperatureRow::getRowsByMonth(const std::vector<TemperatureRow>& rows,
-	const std::string& month)
-{
-	std::vector<TemperatureRow> rowsByMonth;
-	for (const auto& row : rows) {
-		std::string rowMonth = row.getMonth();
-		if (rowMonth == month)
-			rowsByMonth.push_back(row);
-		else if (rowMonth > month)
-			break;
-	}
-	return rowsByMonth;
 }
 
 
@@ -147,7 +64,7 @@ std::map <std::string, std::vector<double>> TemperatureRow::getTempsByYear(const
 
 
 std::map <std::string, std::vector<double>> TemperatureRow::getTempsByDayOfYear(const std::vector<TemperatureRow>& rows,
-	unsigned int countryIndex, std::string monthDay)
+	unsigned int countryIndex, const std::string monthDay)
 {
 	std::map<std::string, std::vector<double>> dayOfYearTemps;
 	std::string currentYear = rows[0].getYear();
@@ -173,7 +90,6 @@ std::map <std::string, std::vector<double>> TemperatureRow::getTempsByDayOfYear(
 
 	return dayOfYearTemps;
 }
-
 
 
 const std::map<std::string, int> TemperatureRow::years = {
@@ -218,4 +134,54 @@ const std::map<std::string, int> TemperatureRow::years = {
 	{"2018", 38},
 	{"2019", 39}
 };
+
+
+const std::map<std::string, unsigned int> TemperatureRow::countries = {
+    {"AUSTRIA", 0},
+    {"BELGIUM", 1},
+    {"BULGARIA", 2},
+    {"SWITZERLAND", 3},
+    {"CZECH REPUBLIC", 4},
+    {"GERMANY", 5},
+    {"DENMARK", 6},
+    {"ESTONIA", 7},
+    {"SPAIN", 8},
+    {"FINLAND", 9},
+    {"FRANCE", 10},
+    {"UNITED KINGDOM", 11},
+    {"GREECE", 12},
+    {"CROATIA", 13},
+    {"HUNGARY", 14},
+    {"IRELAND", 15},
+    {"ITALY", 16},
+    {"LITHUANIA", 17},
+    {"LUXEMBOURG", 18},
+    {"LATVIA", 19},
+    {"NETHERLANDS", 20},
+    {"NORWAY", 21},
+    {"POLAND", 22},
+    {"PORTUGAL", 23},
+    {"ROMANIA", 24},
+    {"SWEDEN", 25},
+    {"SLOVENIA", 26},
+    {"SLOVAKIA", 27}
+};
+
+
+///////////////// Private methods ///////////////////
+
+
+// Parse year from UTC timestamp
+std::string TemperatureRow::getYear() const {
+    return timestamp.substr(0, 4); // "1980-01-01T00:00:00Z"
+}
+
+std::string TemperatureRow::getMonth() const {
+    return timestamp.substr(5, 2); // "1980-01-01T00:00:00Z"
+}
+
+// Parse day from UTC timestamp
+std::string TemperatureRow::getDay() const {
+    return timestamp.substr(8, 2);
+}
 

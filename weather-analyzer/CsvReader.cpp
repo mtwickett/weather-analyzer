@@ -1,20 +1,6 @@
 #include "CsvReader.h"
 
 
-const std::filesystem::path CsvReader::getFilePath(const std::string fileName)
-{
-	std::filesystem::path rootPath = std::filesystem::current_path();
-	std::filesystem::path filePath = rootPath / "data" / fileName;
-
-	if (!std::filesystem::exists(filePath))
-	{
-		throw std::runtime_error("Path does not exist: " + filePath.string());
-	}
-
-	return filePath;
-}
-
-
 const std::vector<TemperatureRow> CsvReader::readcsv(const std::string fileName)
 {
 
@@ -44,6 +30,20 @@ const std::vector<TemperatureRow> CsvReader::readcsv(const std::string fileName)
 	std::cout << "Check the About section for dataset information." << std::endl;
 
 	return rows;
+}
+
+
+const std::filesystem::path CsvReader::getFilePath(const std::string fileName)
+{
+	std::filesystem::path rootPath = std::filesystem::current_path();
+	std::filesystem::path filePath = rootPath / "data" / fileName;
+
+	if (!std::filesystem::exists(filePath))
+	{
+		throw std::runtime_error("Path does not exist: " + filePath.string());
+	}
+
+	return filePath;
 }
 
 

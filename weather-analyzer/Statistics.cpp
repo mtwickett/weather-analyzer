@@ -78,10 +78,10 @@ std::map<int, std::string, std::greater<int>> Statistics::getCandlestickChart(
 	const std::string green = "\033[32m";
 	
 	for (const auto& c : candlesticks) {
-		int open = static_cast<int>(std::round(c.open));
-		int close = static_cast<int>(std::round(c.close));
-		int high = static_cast<int>(std::round(c.high));
-		int low = static_cast<int>(std::round(c.low));
+		int open = static_cast<int>(std::round(c.getOpen()));
+		int close = static_cast<int>(std::round(c.getClose()));
+		int high = static_cast<int>(std::round(c.getHigh()));
+		int low = static_cast<int>(std::round(c.getLow()));
 		
 		
 		
@@ -116,11 +116,11 @@ std::map<int, std::string, std::greater<int>> Statistics::calculateLineGraphHigh
 	;
 	
 	for (const auto& p : lineGraphPoints) {
-		int high = static_cast<int>(std::round(p.high));
+		int high = static_cast<int>(std::round(p.getHigh()));
 
 		for (auto& pair : lineGraph) {
-			if (pair.first <= high)
-				pair.second += " " + green + "||" + reset;
+			if (pair.first == high)
+				pair.second += " " + green + "**" + reset;
 			else
 				pair.second += "   ";
 		}
@@ -138,11 +138,11 @@ std::map<int, std::string, std::greater<int>> Statistics::calculateLineGraphLows
 	const std::string red = "\033[31m";
 	
 	for (const auto& p : linegraphPoints) {
-		int low = static_cast<int>(std::round(p.low));
+		int low = static_cast<int>(std::round(p.getLow()));
 
 		for (auto& pair : lineGraph) {
-			if (pair.first <= low)
-				pair.second += " " + red + "||" + reset;
+			if (pair.first == low)
+				pair.second += " " + red + "**" + reset;
 			else
 				pair.second += "   ";
 		}
@@ -205,8 +205,8 @@ std::map<int, std::string, std::greater<int>> Statistics::calculateYAxis(const s
 	double yAxisMin = std::numeric_limits<double>::max();
 
 	for (const auto& c : candlesticks) {
-		double highest = std::max({ c.open, c.close, c.high });
-		double lowest = std::min({ c.open, c.close, c.low });
+		double highest = std::max({ c.getOpen(), c.getClose(), c.getHigh() });
+		double lowest = std::min({ c.getOpen(), c.getClose(), c.getLow() });
 		if (highest > yAxisMax)
 			yAxisMax = highest;
 		if (lowest < yAxisMin)
@@ -228,14 +228,14 @@ std::map<int, std::string, std::greater<int>> Statistics::calculateYAxisHighs(co
 {
 	// calculate y-axis scale
 	std::map<int, std::string, std::greater<int>> yAxis;
-	double yAxisMax = lineGraphPoints[0].high;
-	double yAxisMin = lineGraphPoints[0].high;
+	double yAxisMax = lineGraphPoints[0].getHigh();
+	double yAxisMin = lineGraphPoints[0].getHigh();
 
 	for (const auto& p : lineGraphPoints) {
-		if (p.high > yAxisMax)
-			yAxisMax = p.high;
-		if (p.high < yAxisMin)
-			yAxisMin = p.high;
+		if (p.getHigh() > yAxisMax)
+			yAxisMax = p.getHigh();
+		if (p.getHigh() < yAxisMin)
+			yAxisMin = p.getHigh();
 	}
 	int yAxisMaxRound = static_cast<int>(std::round(yAxisMax));
 	int yAxisMinRound = static_cast<int>(std::round(yAxisMin));
@@ -252,14 +252,14 @@ std::map<int, std::string, std::greater<int>> Statistics::calculateYAxisLows(con
 {
 	// calculate y-axis scale
 	std::map<int, std::string, std::greater<int>> yAxis;
-	double yAxisMax = lineGraphPoints[0].low;
-	double yAxisMin = lineGraphPoints[0].low;
+	double yAxisMax = lineGraphPoints[0].getLow();
+	double yAxisMin = lineGraphPoints[0].getLow();
 
 	for (const auto& p : lineGraphPoints) {
-		if (p.low > yAxisMax)
-			yAxisMax = p.low;
-		if (p.low < yAxisMin)
-			yAxisMin = p.low;
+		if (p.getLow() > yAxisMax)
+			yAxisMax = p.getLow();
+		if (p.getLow() < yAxisMin)
+			yAxisMin = p.getLow();
 	}
 	int yAxisMaxRound = static_cast<int>(std::round(yAxisMax));
 	int yAxisMinRound = static_cast<int>(std::round(yAxisMin));

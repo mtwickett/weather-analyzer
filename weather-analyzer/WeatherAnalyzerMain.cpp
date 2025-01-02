@@ -102,7 +102,7 @@ void WeatherAnalyzerMain::getTemperature()
         double temp;
         int rowIndex = TemperatureRow::getRowIndex(rows, timestamp);
         unsigned int tempIndex = TemperatureRow::countries.at(country);
-        temp = rows[rowIndex].temperatures[tempIndex];
+        temp = rows[rowIndex].TemperatureRow::getTemperatures()[tempIndex];
         std::cout << "Temperature Degrees Celcius: " << temp << std::endl;
     }
     catch (const std::exception& e)
@@ -147,8 +147,8 @@ void WeatherAnalyzerMain::printCandlestickData()
     std::cout << "---------------------------------------" << std::endl;
     for (const auto& c : candlesticks) {
         std::cout << std::fixed << std::setprecision(3) << 
-            c.year << " | " << c.open << " | " << c.close <<
-            " | " << c.high << " | " <<c.low << std::endl;
+            c.getYear() << " | " << c.getOpen() << " | " << c.getClose() <<
+            " | " << c.getHigh() << " | " <<c.getLow() << std::endl;
     }
 
     // ask user if they want to plot the candlesticks
@@ -167,8 +167,8 @@ void WeatherAnalyzerMain::printCandlestickData()
 void WeatherAnalyzerMain::plotCandlestickChart(std::vector<Candlestick> candlesticks)
 {
     std::map<int, std::string, std::greater<int>> chart = Statistics::getCandlestickChart(candlesticks);
-    std::string yearStart = candlesticks[0].year;
-    std::string yearEnd = candlesticks.back().year;
+    std::string yearStart = candlesticks[0].getYear();
+    std::string yearEnd = candlesticks.back().getYear();
     auto startIt = TemperatureRow::years.lower_bound(yearStart);
     auto endIt = TemperatureRow::years.upper_bound(yearEnd);
     
@@ -242,7 +242,7 @@ void WeatherAnalyzerMain::printLineGraphData()
     std::cout << "----------------------" << std::endl;
     for (const auto& p : lineGraphPoints) {
         std::cout << std::fixed << std::setprecision(3) <<
-            p.year << " | " << p.high << " | " << p.low << std::endl;
+            p.getYear() << " | " << p.getHigh() << " | " << p.getLow() << std::endl;
     }
 }
 
@@ -304,12 +304,12 @@ void WeatherAnalyzerMain::getPredictionDayTemp()
     std::vector<std::pair<std::string, double>> predicationData;
     if (extremumTemp == "High") {
         for (const auto p : lineGraphPoints) {
-            predicationData.push_back({ p.year, p.high });
+            predicationData.push_back({ p.getYear(), p.getHigh()} );
         }
     }
     else {
         for (const auto p : lineGraphPoints) {
-            predicationData.push_back({ p.year, p.low });
+            predicationData.push_back({ p.getYear(), p.getLow() });
         }
     }
     

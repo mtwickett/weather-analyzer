@@ -7,3 +7,24 @@ Candlestick::Candlestick(std::string _year, double _open, double _close, double 
 {
 
 }
+
+
+const std::string& Candlestick::getYear() const {
+    return year;
+}
+
+double Candlestick::getOpen() const {
+    return open;
+}
+
+double Candlestick::getClose() const {
+    return close;
+}
+
+double Candlestick::getHigh() const {
+    return high;
+}
+
+double Candlestick::getLow() const {
+    return low;
+}
