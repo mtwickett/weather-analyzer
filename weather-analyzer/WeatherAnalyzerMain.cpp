@@ -12,9 +12,9 @@ WeatherAnalyzerMain::WeatherAnalyzerMain()
         {"2", &WeatherAnalyzerMain::getTemperature},
         {"3", &WeatherAnalyzerMain::printCandlestickData},
         {"4", &WeatherAnalyzerMain::plotCandlestickChart},
-        {"5", &WeatherAnalyzerMain::printLineGraphData},
-        {"6", &WeatherAnalyzerMain::plotLineGraph},
-        {"7", &WeatherAnalyzerMain::getPredictionDayTemp}
+        {"5", &WeatherAnalyzerMain::printScatterPlotData},
+        {"6", &WeatherAnalyzerMain::plotScatterPlot},
+        {"7", &WeatherAnalyzerMain::getPredictionTemp}
     };
 }
 
@@ -48,10 +48,10 @@ void WeatherAnalyzerMain::printMenu()
         "1: About",
         "2: Get a Temperature",
         "3: Print Candlestick Data",
-        "4: Plot Candlestick Chart",
-        "5: Print Line Graph Data",
-        "6: Plot Line Graph",
-        "7: Predict a high or low for a day of the year",
+        "4: View Candlestick Chart",
+        "5: Print Scatter Plot Data",
+        "6: View Scatter Plot",
+        "7: Predict a high or low",
         "======================="
     };
 
@@ -76,6 +76,18 @@ std::string WeatherAnalyzerMain::processOption()
 }
 
 
+void WeatherAnalyzerMain::getUserInput()
+{
+    country = getUserCountry();
+    period = getUserPeriodFilter();
+
+    if (period != "1") {
+        month = getUserMonth();
+        day = getUserDay();
+    }
+}
+
+
 void WeatherAnalyzerMain::about()
 {
     std::cout << "---About Section---" << std::endl;
@@ -95,7 +107,6 @@ void WeatherAnalyzerMain::getTemperature()
     std::string hour = getUserHour();
 
     std::string timestamp = year + "-" + month + "-" + day + "T" + hour + ":00:00Z";
-    std::cout << "You chose " << country << " at " << timestamp << std::endl;
   
     try
     {
@@ -103,7 +114,13 @@ void WeatherAnalyzerMain::getTemperature()
         int rowIndex = TemperatureRow::getRowIndex(rows, timestamp);
         unsigned int tempIndex = TemperatureRow::countries.at(country);
         temp = rows[rowIndex].TemperatureRow::getTemperatures()[tempIndex];
-        std::cout << "Temperature Degrees Celcius: " << temp << std::endl;
+        std::cout << red
+                  << "\nCountry: " << country
+                  << "\nDate: " << day << " " << months[month] << " " << year
+                  << "\nTime: " << hour << ":00"
+                  << "\nTemperature Degrees Celcius: " << temp 
+                  << reset << std::endl;
+        
     }
     catch (const std::exception& e)
     {
@@ -114,10 +131,17 @@ void WeatherAnalyzerMain::getTemperature()
 // get only the data
 std::vector<Candlestick> WeatherAnalyzerMain::getCandlestickData()
 {
-    std::string country = getUserCountry();
-    unsigned int countryIndex = TemperatureRow::countries.at(country);
-    std::string period = getUserPeriodFilter();
-    
+    getUserInput();
+    unsigned int countryIndex = 0;
+    auto it = TemperatureRow::countries.find(country);
+    if (it != TemperatureRow::countries.end()) {
+        countryIndex = it->second;
+    }
+    else {
+        std::cerr << "Error: Invalid country entered: " << country << std::endl;
+        throw std::runtime_error("Invalid country input.");
+    }
+
     std::map<std::string, std::vector<double>> yearToTempsMap;
     std::vector<Candlestick> candlesticks;
 
@@ -128,8 +152,6 @@ std::vector<Candlestick> WeatherAnalyzerMain::getCandlestickData()
     }
     else {
         std::cout << "You chose Day" << std::endl;
-        std::string month = getUserMonth();
-        std::string day = getUserDay();
         std::string monthDay = month + "-" + day;
         yearToTempsMap = TemperatureRow::getTempsByDayOfYear(rows, countryIndex, monthDay);
         candlesticks = Statistics::calculateCandlesticks(yearToTempsMap);
@@ -181,11 +203,14 @@ void WeatherAnalyzerMain::plotCandlestickChart(std::vector<Candlestick> candlest
             << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
-    std::string xAxis = "        ";
+    std::string xAxisTop = "        ";
+    std::string xAxisBottom = "        ";
     for (auto it = startIt; it != endIt; ++it) {
-        xAxis += it->first.substr(2, 2) + " ";
+        xAxisTop += it->first.substr(2, 1) + "  ";
+        xAxisBottom += it->first.substr(3, 1) + "  ";
     }
-    std::cout << "\n" << xAxis << std::endl;
+    std::cout << "\n" << xAxisTop << std::endl;
+    std::cout << xAxisBottom << std::endl;
 }
 
 
@@ -206,67 +231,70 @@ void WeatherAnalyzerMain::plotCandlestickChart()
 }
 
 
-std::vector<LineGraphPoint> WeatherAnalyzerMain::getLineGraphData()
+std::vector<ScatterPlotHighLow> WeatherAnalyzerMain::getScatterPlotData()
 {
-    std::string country = getUserCountry();
-    unsigned int countryIndex = TemperatureRow::countries.at(country);
-    std::string period = getUserPeriodFilter();
-
-    
+    getUserInput();
+    unsigned int countryIndex = 0;
+    auto it = TemperatureRow::countries.find(country);
+    if (it != TemperatureRow::countries.end()) {
+        countryIndex = it->second;
+    }
+    else {
+        std::cerr << "Error: Invalid country entered: " << country << std::endl;
+        throw std::runtime_error("Invalid country input.");
+    }
     std::map<std::string, std::vector<double>> yearToTempsMap;
-    std::vector<LineGraphPoint> lineGraphPoints;
+    std::vector<ScatterPlotHighLow> scatterPlot;
 
     if (period == "1") {
         std::cout << "You chose Year" << std::endl;
         yearToTempsMap = TemperatureRow::getTempsByYear(rows, countryIndex);
-        lineGraphPoints = Statistics::calculateLineGraphPoints(yearToTempsMap);
+        scatterPlot = Statistics::calculateScatterPlotHighLows(yearToTempsMap);
     }
     else {
         std::cout << "You chose Day" << std::endl;
-        std::string month = getUserMonth();
-        std::string day = getUserDay();
         std::string monthDay = month + "-" + day;
         yearToTempsMap = TemperatureRow::getTempsByDayOfYear(rows, countryIndex, monthDay);
-        lineGraphPoints = Statistics::calculateLineGraphPoints(yearToTempsMap);
+        scatterPlot = Statistics::calculateScatterPlotHighLows(yearToTempsMap);
     }
 
-    return lineGraphPoints;
+    return scatterPlot;
 }
 
 
-void WeatherAnalyzerMain::printLineGraphData()
+void WeatherAnalyzerMain::printScatterPlotData()
 {
-    std::vector<LineGraphPoint> lineGraphPoints = getLineGraphData();
+    std::vector<ScatterPlotHighLow> scatterPlot = getScatterPlotData();
 
     std::cout << "YEAR |  HIGH  |  LOW" << std::endl;
     std::cout << "----------------------" << std::endl;
-    for (const auto& p : lineGraphPoints) {
+    for (const auto& p : scatterPlot) {
         std::cout << std::fixed << std::setprecision(3) <<
             p.getYear() << " | " << p.getHigh() << " | " << p.getLow() << std::endl;
     }
 }
 
 
-void WeatherAnalyzerMain::plotLineGraph()
+void WeatherAnalyzerMain::plotScatterPlot()
 {
-    std::vector<LineGraphPoint> lineGraphPoints = getLineGraphData();
+    std::vector<ScatterPlotHighLow> scatterPlot = getScatterPlotData();
     std::pair<std::string, std::string> yearRange = getUserYearRange();
     std::string yearStart = yearRange.first;
     std::string yearEnd = yearRange.second;
     int yearStartIndex = TemperatureRow::years.at(yearStart);
     int yearEndIndex = TemperatureRow::years.at(yearEnd);
 
-    std::vector<LineGraphPoint> filteredLineGraphPoints(
-        lineGraphPoints.begin() + yearStartIndex,
-        lineGraphPoints.begin() + yearEndIndex + 1);
+    std::vector<ScatterPlotHighLow> filteredScatterPlot(
+        scatterPlot.begin() + yearStartIndex,
+        scatterPlot.begin() + yearEndIndex + 1);
 
-    std::map<int, std::string, std::greater<int>> lineGraph;
+    std::map<int, std::string, std::greater<int>> plot;
     std::string highOrLow = getUserHighLow();
     if (highOrLow == "High") {
-        lineGraph = Statistics::calculateLineGraphHighs(filteredLineGraphPoints);
+        plot = Statistics::calculateScatterPlotHighs(filteredScatterPlot);
     }
     else
-        lineGraph = Statistics::calculateLineGraphLows(filteredLineGraphPoints);
+        plot = Statistics::calculateScatterPlotLows(filteredScatterPlot);
 
     
     auto startIt = TemperatureRow::years.lower_bound(yearStart);
@@ -274,63 +302,84 @@ void WeatherAnalyzerMain::plotLineGraph()
 
     std::cout << std::endl;
 
-    for (const auto& pair : lineGraph) {
+    for (const auto& pair : plot) {
         std::cout << std::setw(4)
-            << pair.first << "   "
+            << pair.first << "    "
             << pair.second
             << std::endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds(150));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
-    std::string xAxis = "        ";
+    std::string xAxisTop = "        ";
+    std::string xAxisBottom = "        ";
     for (auto it = startIt; it != endIt; ++it) {
-        xAxis += it->first.substr(2, 2) + " ";
+        xAxisTop += it->first.substr(2, 1) + "  ";
+        xAxisBottom += it->first.substr(3, 1) + "  ";
     }
-    std::cout << "\n" << xAxis << std::endl;
+    std::cout << "\n" << xAxisTop << std::endl;
+    std::cout << xAxisBottom << std::endl;
 }
 
 
-void WeatherAnalyzerMain::getPredictionDayTemp()
+void WeatherAnalyzerMain::getPredictionTemp()
 {
-    std::string country = getUserCountry();
-    unsigned int countryIndex = TemperatureRow::countries.at(country);
-    std::map<std::string, std::vector<double>> yearToTempsMap;
-    std::vector<LineGraphPoint> lineGraphPoints;
-    std::string month = getUserMonth();
-    std::string day = getUserDay();
-    std::string monthDay = month + "-" + day;
-    yearToTempsMap = TemperatureRow::getTempsByDayOfYear(rows, countryIndex, monthDay);
-    lineGraphPoints = Statistics::calculateLineGraphPoints(yearToTempsMap);
+    std::vector<ScatterPlotHighLow> scatterPlot = getScatterPlotData();
     std::string extremumTemp = getUserHighLow();
     std::vector<std::pair<std::string, double>> predicationData;
     if (extremumTemp == "High") {
-        for (const auto p : lineGraphPoints) {
+        for (const auto p : scatterPlot) {
             predicationData.push_back({ p.getYear(), p.getHigh()} );
         }
     }
     else {
-        for (const auto p : lineGraphPoints) {
+        for (const auto p : scatterPlot) {
             predicationData.push_back({ p.getYear(), p.getLow() });
         }
     }
     
     double r = Statistics::getCorrelationCoefficient(predicationData);
     if (r >= 0.7 || r <= -0.7) {
-        std::cout << "The correlation coefficient (r) shows a strong correlation of: " << r << std::endl;
-        std::cout << "Therefore, the prediction has been calculated with simple linear regression." << std::endl;
+        // simple linear regression 
+        std::cout << "The correlation coefficient (r) is strong: " << r << std::endl;
+        std::cout << "(Prediction calculated using simple linear regression)." << std::endl;
         double predYear = getUserPredictionYear();
         int predTemp = static_cast<int>(std::round(Statistics::getLinearRegressionPrediction(predicationData, predYear)));
-        std::cout << "The " << extremumTemp << " prediction for " << day << " " << month << " is " << predTemp << std::endl;
+        if (period == "1") {
+            std::cout << red
+                << "\nCountry: " << country
+                << "\n" << extremumTemp << " Temperature Degrees Celcius : " << predTemp
+                << reset << std::endl;
+        }
+        else {
+            std::cout << red
+                << "\nCountry: " << country
+                << "\nDate: " << day << " " << months[month]
+                << "\n" << extremumTemp << " Temperature Degrees Celcius : " << predTemp
+                << reset << std::endl;
+        }
     }
     else {
         // average prediction
-        std::cout << "The correlation coefficient (r) shows a weak correlation of only: " << r << std::endl;
-        std::cout << "Therefore, the prediction is the mean of all years on that day." << std::endl;
+        std::cout << "The correlation coefficient (r) is weak: " << r << std::endl;
+        std::cout << "(Prediction calculated using historical mean)." << std::endl;
         double sum = 0.0;
         for (const auto& pair : predicationData) {
             sum += pair.second;
         }
         int average = static_cast<int>(std::round(sum / predicationData.size()));
-        std::cout << "The " << extremumTemp << " prediction for " << day << " " << month << " is " << average << std::endl;
+        if (period == "1") {
+            std::cout << red << "\n---Yearly mean prediction---"
+                << "\nCountry: " << country
+                << "\n" << extremumTemp << " Temperature Degrees Celcius : " << average
+                << reset << std::endl;
+        }
+        else {
+            std::cout << red << "\n---Yearly mean prediction---"
+                << "\nCountry: " << country
+                << "\nDate: " << day << " " << months[month]
+                << "\n" << extremumTemp << " Temperature Degrees Celcius : " << average
+                << reset << std::endl;
+        }
+        
     }
 
 }
@@ -402,7 +451,7 @@ std::pair<std::string, std::string> WeatherAnalyzerMain::getUserYearRange()
     std::string yearEnd;
 
     do {
-        std::cout << "Choose a year range between 1980-2019 (inclusive): " << std::endl;
+        std::cout << "Choose a year range between 1980-2019 (inclusive)." << std::endl;
         std::cout << "Enter start year:" << std::endl;
         std::getline(std::cin, yearStart);
         std::cout << "Enter end year:" << std::endl;
@@ -419,10 +468,10 @@ std::string WeatherAnalyzerMain::getUserHighLow()
     std::string answer;
     do {
         std::cout << std::endl;
-        std::cout << "Would you like the highs or lows?" << std::endl;
+        std::cout << "Would you like the high or low?" << std::endl;
         std::cout << "=======================" << std::endl;
-        std::cout << "1: Highs" << std::endl;
-        std::cout << "2: Lows" << std::endl;
+        std::cout << "1: High" << std::endl;
+        std::cout << "2: Low" << std::endl;
         std::cout << "=======================" << std::endl;
 
         std::getline(std::cin, answer);

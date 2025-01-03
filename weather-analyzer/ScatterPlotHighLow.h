@@ -4,10 +4,10 @@
 #include <map>
 
 
-class LineGraphPoint
+class ScatterPlotHighLow
 {
 public:
-	LineGraphPoint(std::string _year, double _high, double _low);
+	ScatterPlotHighLow(std::string _year, double _high, double _low);
 
 	const std::string& getYear() const;
 	double getHigh() const;

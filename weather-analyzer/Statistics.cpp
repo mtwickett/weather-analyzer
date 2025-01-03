@@ -45,13 +45,13 @@ std::vector<Candlestick> Statistics::calculateCandlesticks(const std::map<std::s
 }
 
 
-std::vector<LineGraphPoint> Statistics::calculateLineGraphPoints(const std::map<std::string,
+std::vector<ScatterPlotHighLow> Statistics::calculateScatterPlotHighLows(const std::map<std::string,
 	std::vector<double>>& yearToTempsMap)
 {
-	std::vector<LineGraphPoint> lineGraphPoints;
+	std::vector<ScatterPlotHighLow> scatterPlot;
 
 	if (yearToTempsMap.empty()) {
-		return lineGraphPoints;
+		return scatterPlot;
 	}
 
 	for (const auto& pair : yearToTempsMap) {
@@ -61,11 +61,12 @@ std::vector<LineGraphPoint> Statistics::calculateLineGraphPoints(const std::map<
 		double high = highLow.first;
 		double low = highLow.second;
 
-		LineGraphPoint lineGraphPoint(year, high, low);
-		lineGraphPoints.push_back(lineGraphPoint);
+		ScatterPlotHighLow lineGraphPoint(year, high, low);
+		scatterPlot.push_back(lineGraphPoint);
 	}
 
-	return lineGraphPoints;
+	return scatterPlot;
+;
 }
 
 
@@ -76,7 +77,6 @@ std::map<int, std::string, std::greater<int>> Statistics::getCandlestickChart(
 	const std::string reset = "\033[0m";
 	const std::string red = "\033[31m";
 	const std::string green = "\033[32m";
-	
 	for (const auto& c : candlesticks) {
 		int open = static_cast<int>(std::round(c.getOpen()));
 		int close = static_cast<int>(std::round(c.getClose()));
@@ -88,15 +88,15 @@ std::map<int, std::string, std::greater<int>> Statistics::getCandlestickChart(
 		for (auto& pair : chart) {
 			if (pair.first >= std::min(open, close) && pair.first <= std::max(open, close)) {
 				if (close >= open)
-					chart[pair.first] += " " + green + "==" + reset;
+					chart[pair.first] += green + " \u2588" + " " + reset;
 				else
-					chart[pair.first] += " " + red + "==" + reset;
+					chart[pair.first] += red + " \u2588" + " " + reset;
 			}
 			else if (pair.first >= low && pair.first <= high) {
 				if (close >= open)
-					chart[pair.first] += " " + green + "||" + reset;
+					chart[pair.first] += green + " \u2502" + " " + reset;
 				else
-					chart[pair.first] += " " + red + "||" + reset;
+					chart[pair.first] += red + " \u2502" + " " + reset;
 			}
 			else {
 				chart[pair.first] += "   ";
@@ -107,22 +107,22 @@ std::map<int, std::string, std::greater<int>> Statistics::getCandlestickChart(
 }
 
 
-std::map<int, std::string, std::greater<int>> Statistics::calculateLineGraphHighs(
-	const std::vector<LineGraphPoint>& lineGraphPoints)
+std::map<int, std::string, std::greater<int>> Statistics::calculateScatterPlotHighs(
+	const std::vector<ScatterPlotHighLow>& scatterPlot)
 {
-	std::map<int, std::string, std::greater<int>> lineGraph = calculateYAxisHighs(lineGraphPoints);
+	std::map<int, std::string, std::greater<int>> lineGraph = calculateYAxisHighs(scatterPlot);
 	const std::string reset = "\033[0m";
 	const std::string green = "\033[32m";
 	;
 	
-	for (const auto& p : lineGraphPoints) {
+	for (const auto& p : scatterPlot) {
 		int high = static_cast<int>(std::round(p.getHigh()));
 
 		for (auto& pair : lineGraph) {
 			if (pair.first == high)
-				pair.second += " " + green + "**" + reset;
+				pair.second += green + "+" + "  " + reset;
 			else
-				pair.second += "   ";
+				pair.second += "\033[38;5;250m\u2591  ";
 		}
 		
 	}
@@ -130,19 +130,19 @@ std::map<int, std::string, std::greater<int>> Statistics::calculateLineGraphHigh
 }
 
 
-std::map<int, std::string, std::greater<int>> Statistics::calculateLineGraphLows(
-	const std::vector<LineGraphPoint>& linegraphPoints)
+std::map<int, std::string, std::greater<int>> Statistics::calculateScatterPlotLows(
+	const std::vector<ScatterPlotHighLow>& scatterPlot)
 {
-	std::map<int, std::string, std::greater<int>> lineGraph = calculateYAxisLows(linegraphPoints);
+	std::map<int, std::string, std::greater<int>> lineGraph = calculateYAxisLows(scatterPlot);
 	const std::string reset = "\033[0m";
 	const std::string red = "\033[31m";
 	
-	for (const auto& p : linegraphPoints) {
+	for (const auto& p : scatterPlot) {
 		int low = static_cast<int>(std::round(p.getLow()));
 
 		for (auto& pair : lineGraph) {
 			if (pair.first == low)
-				pair.second += " " + red + "**" + reset;
+				pair.second += red + "+" + "  " + reset;
 			else
 				pair.second += "   ";
 		}
@@ -224,14 +224,14 @@ std::map<int, std::string, std::greater<int>> Statistics::calculateYAxis(const s
 }
 
 
-std::map<int, std::string, std::greater<int>> Statistics::calculateYAxisHighs(const std::vector<LineGraphPoint>& lineGraphPoints)
+std::map<int, std::string, std::greater<int>> Statistics::calculateYAxisHighs(const std::vector<ScatterPlotHighLow>& scatterPlot)
 {
 	// calculate y-axis scale
 	std::map<int, std::string, std::greater<int>> yAxis;
-	double yAxisMax = lineGraphPoints[0].getHigh();
-	double yAxisMin = lineGraphPoints[0].getHigh();
+	double yAxisMax = scatterPlot[0].getHigh();
+	double yAxisMin = scatterPlot[0].getHigh();
 
-	for (const auto& p : lineGraphPoints) {
+	for (const auto& p : scatterPlot) {
 		if (p.getHigh() > yAxisMax)
 			yAxisMax = p.getHigh();
 		if (p.getHigh() < yAxisMin)
@@ -248,14 +248,14 @@ std::map<int, std::string, std::greater<int>> Statistics::calculateYAxisHighs(co
 }
 
 
-std::map<int, std::string, std::greater<int>> Statistics::calculateYAxisLows(const std::vector<LineGraphPoint>& lineGraphPoints)
+std::map<int, std::string, std::greater<int>> Statistics::calculateYAxisLows(const std::vector<ScatterPlotHighLow>& scatterPlot)
 {
 	// calculate y-axis scale
 	std::map<int, std::string, std::greater<int>> yAxis;
-	double yAxisMax = lineGraphPoints[0].getLow();
-	double yAxisMin = lineGraphPoints[0].getLow();
+	double yAxisMax = scatterPlot[0].getLow();
+	double yAxisMin = scatterPlot[0].getLow();
 
-	for (const auto& p : lineGraphPoints) {
+	for (const auto& p : scatterPlot) {
 		if (p.getLow() > yAxisMax)
 			yAxisMax = p.getLow();
 		if (p.getLow() < yAxisMin)
@@ -319,7 +319,7 @@ double Statistics::getLinearRegressionPrediction(std::vector<std::pair<std::stri
 	double mNumerator = (numDataPoints * sumXY - sumX * sumY);
 	double mDenominator = numDataPoints * sumXSquared - pow(sumX, 2);
 	if (mDenominator == 0.0) {
-		throw std::runtime_error("Cannot calculate linear regression; check input data for identical X values.");
+		throw std::runtime_error("Cannot calculate linear regression");
 	}
 	double m = mNumerator / mDenominator;
 	double b = (sumY - m * sumX) / numDataPoints;
