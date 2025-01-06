@@ -1,55 +1,77 @@
+// Related header
 #include "TemperatureRow.h"
 
+// standard library includes
 #include <cmath>
 
 
-TemperatureRow::TemperatureRow(const std::string& _timestamp, const std::vector<double>& _temperatures)
-    : timestamp(_timestamp),
-      temperatures(_temperatures)
+TemperatureRow::TemperatureRow(std::string _timestamp, std::vector<double> _temperatures)
+    : timestamp(std::move(_timestamp)),   // Move timestamp into the member
+	  temperatures(std::move(_temperatures)) // Move temperatures into the member
 {
 
 }
+
 
 const std::vector<double>& TemperatureRow::getTemperatures() const
 {
 	return TemperatureRow::temperatures;
 }
 
-
+// Uses binary search to locate a timestamp in a vector of temperature rows sorted by timestamp. 
 const int TemperatureRow::getRowIndex(const std::vector<TemperatureRow>& rows,
 	const std::string& searchTimestamp)
 {
+	// Initialize pointers to the left most and right most indices
 	int left = 0, right = int(rows.size() - 1);
 
+	// Continue searching while the left pointer is still less than or equal to the right pointer.
 	while (left <= right) {
+
+		// Get the middle index and element.
 		int mid = int(floor((left + right) / 2));
 		std::string tsMid = rows[mid].timestamp;
 
+		// Return row index if found.
 		if (searchTimestamp == tsMid)
 			return mid;
-
+		// If the search timestamp is less than the midpoint timestamp, adjust the search range
+		// to exclude the right half.
 		if (searchTimestamp < tsMid)
 			right = mid - 1;
+		// If the search timestamp is greater than the midpoint timestamp, adjust the search range
+		// to exclude the left half.
 		else
 			left = mid + 1;
 	}
 
+	// Return -1 if not found.
 	return -1;
 }
 
 
+// Groups temperature data by year from a vector of TemperatureRow objects.
+// For each year, it creates a mapping of the year (as a string) to a vector of temperatures 
+// for the specified country index.
 std::map <std::string, std::vector<double>> TemperatureRow::getTempsByYear(const std::vector<TemperatureRow>& rows,
-	unsigned int countryIndex)
+	unsigned int& countryIndex)
 {
+	// Initialize the map to store year-to-temperatures mapping.
 	std::map<std::string, std::vector<double>> yearTemps;
+	// Start with the year of the first row and an empty vector of temperatures.
 	std::string currentYear = rows[0].getYear();
 	std::vector<double> temps;
 
-
+	// Iterate over each TemperatureRow in the rows vector.
 	for (const auto& row : rows) {
+		// Check the current year still matches the row year and add the row temperature for the chosen country.
 		if (currentYear == row.getYear()) {
 			temps.push_back(row.temperatures[countryIndex]);
 		}
+		// The row year has moved to the next year and does not match the current year.
+		// Map the current year to a vector of temperatures from that year for the chosen country.
+		// Update the current year, empty the vector and add the current row as the first temperature
+		// for the next year.
 		else {
 			yearTemps[currentYear] = temps;
 			currentYear = row.getYear();
@@ -57,42 +79,57 @@ std::map <std::string, std::vector<double>> TemperatureRow::getTempsByYear(const
 			temps.push_back(row.temperatures[countryIndex]);
 		}
 	}
+	// Add the final years temps to the map (2019)
 	yearTemps[currentYear] = temps;
 
 	return yearTemps;
 }
 
 
+// Groups temperature data by a day of the year from a vector of TemperatureRow objects.
+// For each year, it creates a mapping of the year (as a string) to a vector of temperatures 
+// for the specified country index. 
 std::map <std::string, std::vector<double>> TemperatureRow::getTempsByDayOfYear(const std::vector<TemperatureRow>& rows,
-	unsigned int countryIndex, const std::string monthDay)
+	unsigned int& countryIndex, const std::string& monthDay)
 {
+	// Initialize the map to store year-to-temperatures mapping.
 	std::map<std::string, std::vector<double>> dayOfYearTemps;
+	// Start with the year of the first row and an empty vector of temperatures.
 	std::string currentYear = rows[0].getYear();
 	std::vector<double> temps;
 
+	// Iterate over each TemperatureRow in the rows vector.
 	for (const auto& row : rows) {
+		// Check the current year still matches the row year.
 		if (currentYear == row.getYear()) {
+			// Check the month and day matches the chosen day and add the row temperature for the chosen country.
 			if (row.getMonth() + "-" + row.getDay() == monthDay) {
 				temps.push_back(row.temperatures[countryIndex]);
 			}
 		}
+		// The row year has moved to the next year and does not match the current year.
+		// Map the current year to a vector of temperatures from that day of the year for the chosen country.
+		// Update the current year and empty the vector.
 		else {
 			dayOfYearTemps[currentYear] = temps;
 			currentYear = row.getYear();
 			temps.clear();
+			// If the first row of the next year matches the month and day (this woulod be January 1st at 00:00),
+			// add this row to the empty vector
 			if (row.getMonth() + "-" + row.getDay() == monthDay) {
 				temps.push_back(row.temperatures[countryIndex]);
 			}
 		}
 	}
 
+	// Add the final years temps to the map (2019)
 	dayOfYearTemps[currentYear] = temps;
 
 	return dayOfYearTemps;
 }
 
 
-const std::map<std::string, int> TemperatureRow::years = {
+const std::map<std::string, unsigned int> TemperatureRow::years = {
 	{"1980", 0},
 	{"1981", 1},
 	{"1982", 2},
@@ -171,17 +208,22 @@ const std::map<std::string, unsigned int> TemperatureRow::countries = {
 ///////////////// Private methods ///////////////////
 
 
-// Parse year from UTC timestamp
+// Extracts and returns the year component from the timestamp string.
 std::string TemperatureRow::getYear() const {
-    return timestamp.substr(0, 4); // "1980-01-01T00:00:00Z"
+	// Extracts the first 4 characters representing the year.
+    return timestamp.substr(0, 4); 
 }
 
+// Extracts and returns the month component from the timestamp string.
 std::string TemperatureRow::getMonth() const {
-    return timestamp.substr(5, 2); // "1980-01-01T00:00:00Z"
+	// Extracts the characters at positions 5 and 6, representing the month.
+    return timestamp.substr(5, 2); 
 }
 
-// Parse day from UTC timestamp
+
+// Extracts and returns the day component from the timestamp string.
 std::string TemperatureRow::getDay() const {
+	// Extracts the characters at positions 8 and 9, representing the day.
     return timestamp.substr(8, 2);
 }
 
